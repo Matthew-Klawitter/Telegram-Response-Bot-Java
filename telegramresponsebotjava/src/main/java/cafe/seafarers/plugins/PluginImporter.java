@@ -4,45 +4,70 @@ import com.sun.jdi.ClassNotLoadedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PluginImporter {
-    private List<Class> importedPluginClasses;
+    private Set<Class> importedPluginClasses;
     private boolean imported;
 
     public PluginImporter() {
-        importedPluginClasses = new ArrayList<Class>();
+        importedPluginClasses = new HashSet<Class>();
         imported = false;
     }
 
     /**
-     * Imports Plugin paths into Java classpath and appends them to importedPluginClasses
-     * @param pluginClassPaths List<String> of paths to packages to import
-     * @return boolean true if successfully imported
+     * Imports plugin paths into Java classpath and appends them to importedPluginClasses
+     * This should only be run once unless an exception occurs
+     * @param pluginClassPaths Set<String> of paths to packages to import
+     * @return boolean true if successfully imported, false if already imported
      */
     public boolean importPlugins(List<String> pluginClassPaths) {
         if (!imported){
-            try {
-                for (String s: pluginClassPaths){
+            for (String s: pluginClassPaths){
+                try {
                     Class c = Class.forName(s);
                     importedPluginClasses.add(c);
-                    //BotPlugin plugin = (BotPlugin) c.getDeclaredConstructor().newInstance()
                 }
-                imported = true;
+                catch (ClassNotFoundException e) {
+                    // We received an invalid path...
+                    e.printStackTrace();
+                    importedPluginClasses.clear();
+                    return false;
+                }
             }
-            catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
+            imported = true;
         }
         return false;
     }
 
     /**
-     * Returns an ArrayList of loaded PluginClasses
+     * Imports a single plugin into the Java classpath and appends it to importedPluginClasses
+     * @param pluginClassPath full path to the plugin class
+     * @return true if the class is successfully imported
+     */
+    public boolean importPlugin(String pluginClassPath) {
+        try {
+            Class c = Class.forName(pluginClassPath);
+            if (!importedPluginClasses.contains(c)){
+                importedPluginClasses.add(c);
+                return true;
+            }
+            return false;
+        }
+        catch (ClassNotFoundException e) {
+            // We received an invalid path...
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Returns a Set of loaded PluginClasses
      * @return List<Class>
      */
-    public List<Class> getImportedPluginClasses(){
+    public Set<Class> getImportedPluginClasses(){
         return importedPluginClasses;
     }
 
