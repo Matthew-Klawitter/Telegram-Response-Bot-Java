@@ -1,9 +1,5 @@
 package cafe.seafarers.plugins;
 
-import com.sun.jdi.ClassNotLoadedException;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
