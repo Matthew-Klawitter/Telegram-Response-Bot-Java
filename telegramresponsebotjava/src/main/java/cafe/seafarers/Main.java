@@ -1,9 +1,11 @@
 package cafe.seafarers;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
-import cafe.seafarers.plugins.BotPlugin;
-import cafe.seafarers.plugins.PluginImporter;
+import com.pengrad.telegrambot.TelegramBot;
+
+import cafe.seafarers.plugins.PluginManager;
 
 public class Main {
     /**
@@ -11,24 +13,19 @@ public class Main {
      * @param args
      */
     public static void main(String[] args){
-        PluginImporter importer = new PluginImporter();
-        importer.importPlugin("telegramresponsebotjava/src/main/test/DummyPlugin.java");
-
-        try {
-            for (Class c :  importer.getImportedPluginClasses()){
-                // Instantiate and load Plugin
-                BotPlugin plugin = (BotPlugin)c.getDeclaredConstructor().newInstance();
-                System.out.println(plugin.getName());
-
-            }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    	if(args.length < 2) {
+    		System.out.println("Usage: java Main <bot token> <plugin directory> <plugin names...>");
+    		return;
+    	}
+    	String botToken = args[0];
+    	String pluginDir = args[1];
+    	List<String> pluginNames = new ArrayList<String>();
+    	for(int i = 2; i < args.length; i++) {
+    		pluginNames.add(args[i]);
+    	}
+    	
+    	TelegramBot bot = new TelegramBot(botToken);
+    	PluginManager manager = new PluginManager(pluginDir);
+    	manager.loadPlugins(bot, pluginNames);
     }
 }

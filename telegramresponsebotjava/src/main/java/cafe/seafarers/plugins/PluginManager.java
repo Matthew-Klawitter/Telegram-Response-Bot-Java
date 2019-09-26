@@ -14,11 +14,11 @@ public class PluginManager {
     private HashMap<BotPlugin, Boolean> enabledPlugins;
     private PluginImporter importer;
 
-    public PluginManager(){
+    public PluginManager(String pluginPath){
         plugins = new HashSet<BotPlugin>();
         commands = new HashMap<String, BotPlugin>();
         enabledPlugins = new HashMap<BotPlugin, Boolean>();
-        importer = new PluginImporter();
+        importer = new PluginImporter(pluginPath);
     }
 
     /**
@@ -37,6 +37,7 @@ public class PluginManager {
             return instantiateImported();
         }
         else if (importer.importPlugins(pluginPaths)){
+        	importer.setInstantiated();
             return instantiateImported();
         }
         return false;
@@ -48,10 +49,11 @@ public class PluginManager {
      */
     private boolean instantiateImported(){
         try {
-            for (Class c :  importer.getImportedPluginClasses()){
+            for (Class<BotPlugin> c :  importer.getImportedPluginClasses()){
                 // Instantiate and load Plugin
-                BotPlugin plugin = (BotPlugin) c.getDeclaredConstructor(BotPlugin.class).newInstance();
-                plugins.add((plugin));
+                BotPlugin plugin = c.getConstructor().newInstance();
+                System.out.println(plugin.getName());
+                plugins.add(plugin);
 
                 // Map commands to Plugin
                 for (String command : plugin.getCommands()){
