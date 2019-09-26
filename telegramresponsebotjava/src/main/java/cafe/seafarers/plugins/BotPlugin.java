@@ -9,12 +9,25 @@ public interface BotPlugin {
      * @return BaseRequest a Telegram object to be sent to a chat room
      */
     public BaseRequest onCommand(Update update);
+    
+    /**
+     * Run every time the bot recieves a message, if this plugin has message
+     * access
+     * @param update
+     * @return
+     */
+    public BaseRequest onMessage(Update update);
 
     /**
      * Returns a list of commands that when received by Telegram run this plugin's onCommand method
      * @return Array String
      */
     public String[] getCommands();
+    
+    /**
+     * @return true if this plugin should receive all messages
+     */
+    public boolean hasMessageAccess();
 
     /**
      * The name of the plugin
@@ -33,6 +46,11 @@ public interface BotPlugin {
      * @return String plugin version
      */
     public String getVersion();
+    
+    /**
+     * @return String plugin help
+     */
+    public String getHelp();
 
     /**
      * Enables the plugin's operation if it is currently disabled

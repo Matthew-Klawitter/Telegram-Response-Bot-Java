@@ -3,8 +3,7 @@ package cafe.seafarers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pengrad.telegrambot.TelegramBot;
-
+import cafe.seafarers.bot.ResponseBot;
 import cafe.seafarers.plugins.PluginManager;
 
 public class Main {
@@ -13,6 +12,7 @@ public class Main {
      * @param args
      */
     public static void main(String[] args){
+    	// Parse args
     	if(args.length < 2) {
     		System.out.println("Usage: java Main <bot token> <plugin directory> <plugin names...>");
     		return;
@@ -24,8 +24,14 @@ public class Main {
     		pluginNames.add(args[i]);
     	}
     	
-    	TelegramBot bot = new TelegramBot(botToken);
+    	// Start plugin manager
     	PluginManager manager = new PluginManager(pluginDir);
-    	manager.loadPlugins(bot, pluginNames);
+    	manager.loadPlugins(pluginNames);
+    	
+    	System.out.println("Starting bot");
+    	// Start bot
+    	ResponseBot bot = new ResponseBot(botToken);
+    	bot.startUpdateListener(manager);
+    	System.out.println("Listening...");
     }
 }
