@@ -1,9 +1,9 @@
 package cafe.seafarers;
 
+import java.lang.reflect.InvocationTargetException;
+
 import cafe.seafarers.plugins.BotPlugin;
 import cafe.seafarers.plugins.PluginImporter;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class Main {
     /**
@@ -11,8 +11,8 @@ public class Main {
      * @param args
      */
     public static void main(String[] args){
-       /* PluginImporter importer = new PluginImporter();
-        importer.importPlugin("D:\\Documents\\GitHub\\Telegram-Response-Bot-Java\\telegramresponsebotjava\\src\\main\\test\\DummyPlugin.java");
+        PluginImporter importer = new PluginImporter();
+        importer.importPlugin("telegramresponsebotjava/src/main/test/DummyPlugin.java");
 
         try {
             for (Class c :  importer.getImportedPluginClasses()){
@@ -29,6 +29,6 @@ public class Main {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 }
