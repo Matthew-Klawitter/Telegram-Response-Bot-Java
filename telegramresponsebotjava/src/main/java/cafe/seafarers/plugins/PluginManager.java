@@ -33,10 +33,7 @@ public class PluginManager {
         commands.clear();
         enabledPlugins.clear();
 
-        if (importer.isImported()){
-            return instantiateImported();
-        }
-        else if (importer.importPlugins(pluginPaths)){
+        if (importer.importPlugins(pluginPaths)){
         	importer.setInstantiated();
             return instantiateImported();
         }
@@ -74,10 +71,6 @@ public class PluginManager {
             e.printStackTrace();
         }
         return false;
-    }
-
-    public boolean dynamicallyLoad(TelegramBot bot, BotPlugin plugin){
-        return true;
     }
 
     public boolean reloadPlugins(TelegramBot bot){
