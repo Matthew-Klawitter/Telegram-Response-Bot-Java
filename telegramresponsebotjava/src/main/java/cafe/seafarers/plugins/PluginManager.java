@@ -8,6 +8,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.pengrad.telegrambot.model.Update;
@@ -107,32 +108,88 @@ public class PluginManager {
 	}
 
 	public BaseRequest handleCommand(Update update) {
+		Long chatId = update.message().chat().id();
 		String message = update.message().text().substring(1);
 		// Split at either @ or ' '
 		String command = message.split("[ @]")[0];
+		String args = message.substring(command.length()).trim();
 		// Run a PluginManager command or a plugin command
 		switch (command) {
 		case "plugins":
 			StringBuffer response = new StringBuffer();
-			for (BotPlugin plugin : plugins.keySet()) {
-				response.append(plugin.getName());
+			for (Entry<BotPlugin, Boolean> plugin : plugins.entrySet()) {
+				response.append(plugin.getKey().getName());
+				// Notify if plugin has message access
+				if (plugin.getKey().hasMessageAccess()) {
+					response.append("(M)");
+				}
+				// Notify if plugin disabled
+				if (!plugin.getValue()) {
+					response.append("(D)");
+				}
 				response.append("\n");
 			}
-			return new SendMessage(update.message().chat().id(), response.toString());
+			return new SendMessage(chatId, response.toString());
 		case "help":
-			String pluginName = message.substring(command.length()).trim();
-			if (getPluginByName(pluginName) == null) {
-				return new SendMessage(update.message().chat().id(), "Help with which plugin?");
+			if (getPluginByName(args) == null) {
+				return new SendMessage(chatId,
+						"/help <plugin name> - Display help for a plugin\n" 
+				+ "/plugins - List plugins\n"
+				+ "/disable <plugin name> - Disables plugin\n"
+				+ "/enable <plugin name> - Enables plugin\n");
+			} else {
+				BotPlugin plugin = getPluginByName(args);
+				StringBuffer sb = new StringBuffer();
+				sb.append(plugin.getName());
+				sb.append("  ");
+				sb.append(plugin.getVersion());
+				sb.append("\n");
+				sb.append(plugin.getAuthor());
+				sb.append("\n");
+				sb.append(getPluginHelp(args));
+				return new SendMessage(chatId, sb.toString());
 			}
-			return new SendMessage(update.message().chat().id(), getPluginHelp(pluginName));
+		case "disable":
+			if (getPluginByName(args) == null) {
+				return new SendMessage(chatId, "That plugin doesn't exist");
+			} else {
+				if (disablePlugin(args)) {
+					return new SendMessage(chatId, "Disabled " + args);
+				} else {
+					return new SendMessage(chatId, "Could not disable " + args);
+				}
+			}
+		case "enable":
+			if (getPluginByName(args) == null) {
+				return new SendMessage(chatId, "That plugin doesn't exist");
+			} else {
+				if (enablePlugin(args)) {
+					return new SendMessage(chatId, "Enabled " + args);
+				} else {
+					return new SendMessage(chatId, "Could not enable" + args);
+				}
+			}
 		default:
-			return commands.get(command).onCommand(update);
+			BotPlugin plugin = commands.get(command);
+			if(!plugins.get(plugin)) {
+				return new SendMessage(chatId, plugin.getName() + " is disabled.");
+			}
+			BaseRequest request = plugin.onCommand(update);
+			if (request == null) {
+				return new SendMessage(chatId, "That command does not exist");
+			} else {
+				return request;
+			}
 		}
 	}
 
 	public BaseRequest handleMessage(Update update) {
 		BaseRequest request = null;
 		for (BotPlugin plugin : messagePlugins) {
+			// Skip if plugin isn't enabled
+			if(!plugins.get(plugin)) {
+				continue;
+			}
 			// Make sure to store a non null request if we ever find one
 			BaseRequest newRequest = plugin.onMessage(update);
 			if (newRequest != null) {

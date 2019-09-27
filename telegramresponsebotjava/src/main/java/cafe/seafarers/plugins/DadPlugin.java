@@ -4,17 +4,22 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
-public class DummyPlugin implements BotPlugin {
-	private static final String[] COMMANDS = {"test"};
+public class DadPlugin implements BotPlugin {
+	private static final String[] COMMANDS = {};
 	
 	@Override
     public BaseRequest onCommand(Update update) {
-    	return new SendMessage(update.message().chat().id(), "Hello!");
+    	return null;
     }
 	
 	@Override
 	public BaseRequest onMessage(Update update) {
-		return new SendMessage(update.message().chat().id(), update.message().text()); 
+		String message = update.message().text().toLowerCase();
+		if(message.startsWith("i'm") || message.startsWith("im")) {
+			String newMessage = "Hi, "+message.substring(3).trim()+", I'm dad!";
+			return new SendMessage(update.message().chat().id(), newMessage);
+		}
+		return null;
 	}
 
 	@Override
@@ -24,12 +29,12 @@ public class DummyPlugin implements BotPlugin {
 
 	@Override
     public String getName() {
-        return "Dummy Plugin";
+        return "Dad";
     }
 
 	@Override
     public String getAuthor() {
-        return "";
+        return "Mark";
     }
 
 	@Override
@@ -54,6 +59,6 @@ public class DummyPlugin implements BotPlugin {
 
 	@Override
 	public String getHelp() {
-		return "/test to greet me\n";
+		return "I'm dad!\n";
 	}
 }
