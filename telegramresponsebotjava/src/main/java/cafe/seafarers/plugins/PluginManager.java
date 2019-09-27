@@ -98,6 +98,7 @@ public class PluginManager {
 				}
 				// Enable the plugin for operation
 				plugins.put(plugin, true);
+				plugin.enable();
 			}
 			return true;
 		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException
@@ -141,9 +142,9 @@ public class PluginManager {
 				BotPlugin plugin = getPluginByName(args);
 				StringBuffer sb = new StringBuffer();
 				sb.append(plugin.getName());
-				sb.append("  ");
+				sb.append(" ( ");
 				sb.append(plugin.getVersion());
-				sb.append("\n");
+				sb.append(")\n By ");
 				sb.append(plugin.getAuthor());
 				sb.append("\n");
 				sb.append(getPluginHelp(args));
