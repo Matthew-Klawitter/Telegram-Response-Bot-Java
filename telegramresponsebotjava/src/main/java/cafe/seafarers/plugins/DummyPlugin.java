@@ -1,8 +1,11 @@
 package cafe.seafarers.plugins;
 
+import cafe.seafarers.config.Resources;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
+
+import java.io.*;
 
 public class DummyPlugin implements BotPlugin {
 	private static final String[] COMMANDS = {"test"};
@@ -55,5 +58,21 @@ public class DummyPlugin implements BotPlugin {
 	@Override
 	public String getHelp() {
 		return "/test to greet me\n";
+	}
+
+	/**
+	 * Method to test various plugin functions
+	 */
+	public void Test() throws IOException {
+		System.out.println(Resources.SaveFile(this, "test.txt", "this is test test yaya"));
+
+		File file = Resources.LoadFile(this, "test.txt");
+		BufferedReader br = new BufferedReader(new FileReader(file));
+
+		String st;
+		while ((st = br.readLine()) != null){
+			System.out.println(st);
+		}
+
 	}
 }

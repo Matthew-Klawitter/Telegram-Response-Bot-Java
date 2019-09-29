@@ -23,7 +23,7 @@ public class PluginManager {
 	private HashMap<BotPlugin, Boolean> plugins;
 	// Set of plugins that receive each message updates
 	private Set<BotPlugin> messagePlugins;
-	//
+	// Directory all plugins are stored in
 	private String pluginDirPath;
 
 	public PluginManager(String pluginPath) {

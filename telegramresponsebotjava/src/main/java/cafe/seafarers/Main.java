@@ -1,9 +1,11 @@
 package cafe.seafarers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cafe.seafarers.bot.ResponseBot;
+import cafe.seafarers.plugins.DummyPlugin;
 import cafe.seafarers.plugins.PluginManager;
 
 public class Main {
@@ -11,7 +13,7 @@ public class Main {
      * Main method that launches the bot
      * @param args
      */
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
     	// Parse args
     	if(args.length < 2) {
     		System.out.println("Usage: java Main <bot token> <plugin directory> <plugin names...>");
