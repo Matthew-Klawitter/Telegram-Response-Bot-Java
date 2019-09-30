@@ -1,6 +1,7 @@
 package cafe.seafarers.plugins;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
+
+import cafe.seafarers.config.Resources;
 
 public class TriviaPlugin implements BotPlugin {
 
@@ -213,8 +216,13 @@ public class TriviaPlugin implements BotPlugin {
 		
 		if (game.isGameOver()) {
 			sb.append("Game Over!\n\n");
-			sb.append(game.getWinnerUser());
-			sb.append(" has won!");
+			if(game.getWinnerUser() != null) {
+				sb.append(game.getWinnerUser());
+				sb.append(" has won!");
+			} else {
+				sb.append("Nobody won!");
+			}
+			
 			game.reset();
 			currentGames.remove(update.message().chat().id());
 		} else {
@@ -261,7 +269,8 @@ public class TriviaPlugin implements BotPlugin {
 		currentGames = new HashMap<Long, TriviaGame>();
 
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("/home/mark/jeopardy.txt"));
+			File file = Resources.LoadFile(this, "trivia.txt");
+			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line = br.readLine();
 			TriviaGame newGame = null;
 			TriviaRound round = null;
@@ -287,7 +296,7 @@ public class TriviaPlugin implements BotPlugin {
 			e.printStackTrace();
 		}
 
-		System.out.println(trivia.size());
+		System.out.println(trivia.size() + " trivia games");
 		return true;
 	}
 
