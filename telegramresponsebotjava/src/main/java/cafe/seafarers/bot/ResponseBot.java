@@ -24,6 +24,9 @@ public class ResponseBot {
 				public int process(List<Update> list) {
 					for (Update update : list) {
 						BaseRequest request = null;
+						if(update.message().text() == null) {
+							continue;
+						}
 						if (update.message().text().startsWith("/")) {
 							request = manager.handleCommand(update);
 						} else {

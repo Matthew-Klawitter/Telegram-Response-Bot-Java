@@ -45,6 +45,17 @@ public class TriviaPlugin implements BotPlugin {
 			}
 			return false;
 		}
+		
+		public String getAnswer() {
+			StringBuffer sb = new StringBuffer();
+			for (String ans : answers) {
+				if(sb.length() > 0) {
+					sb.append(" or " );
+				}
+				sb.append(ans);
+			}
+			return sb.toString();
+		}
 
 		public String getQuestion() {
 			return question;
@@ -92,6 +103,10 @@ public class TriviaPlugin implements BotPlugin {
 
 		public boolean checkAnswer(String guess) {
 			return getRound().checkAnswer(guess);
+		}
+		
+		public String getAnswer() {
+			return getRound().getAnswer();
 		}
 
 		/**
@@ -163,7 +178,9 @@ public class TriviaPlugin implements BotPlugin {
 				currentGames.put(update.message().chat().id(), game);
 
 				StringBuffer sb = new StringBuffer();
-				sb.append("Welcome to trivia night!\n");
+				sb.append("Welcome to trivia night!\n'");
+				sb.append(args);
+				sb.append("' is the game.\n");
 				sb.append("Starting round " + game.getCurrentRound() + "\n\n");
 				sb.append(game.getQuestion());
 
@@ -180,8 +197,14 @@ public class TriviaPlugin implements BotPlugin {
 		case "trivialist":
 			StringBuffer sb = new StringBuffer("Avaliable trivia games:\n");
 			for (String name : trivia.keySet()) {
+				if(sb.length() > 4000) {
+					continue;
+				}
 				sb.append(name);
 				sb.append("\n");
+			}
+			if(sb.length() > 4000) {
+				sb.append("and more...");
 			}
 			return new SendMessage(update.message().chat().id(), sb.toString());
 		case "triviastop":
@@ -203,17 +226,18 @@ public class TriviaPlugin implements BotPlugin {
 	}
 	
 	private BaseRequest nextQuestion(TriviaGame game, Update update, boolean skipped) {
-		game.nextRound();
 		StringBuffer sb = new StringBuffer();
 		if(skipped) {
-			sb.append("Skipped question, no points.\n");
+			sb.append("Skipped question, no points.\nThe answer was '");
+			sb.append(game.getAnswer());
+			sb.append("'\n");
 		} else {
 			game.givePoints(getCanonicalName(update.message().from()));
 			sb.append("Correct ");
 			sb.append(getCanonicalName(update.message().from()));
 			sb.append("!\n");
 		}
-		
+		game.nextRound();
 		if (game.isGameOver()) {
 			sb.append("Game Over!\n\n");
 			if(game.getWinnerUser() != null) {
