@@ -172,15 +172,12 @@ public class PluginManager {
 			}
 		default:
 			BotPlugin plugin = commands.get(command);
-			if(!plugins.get(plugin)) {
+			if(plugin == null) { // If no plugin with command
+				return new SendMessage(chatId, "That command does not exist");
+			} else if(!plugins.get(plugin)) {
 				return new SendMessage(chatId, plugin.getName() + " is disabled.");
 			}
-			BaseRequest request = plugin.onCommand(update);
-			if (request == null) {
-				return new SendMessage(chatId, "That command does not exist");
-			} else {
-				return request;
-			}
+			return plugin.onCommand(update);
 		}
 	}
 
@@ -188,7 +185,7 @@ public class PluginManager {
 		BaseRequest request = null;
 		for (BotPlugin plugin : messagePlugins) {
 			// Skip if plugin isn't enabled
-			if(!plugins.get(plugin)) {
+			if (!plugins.get(plugin)) {
 				continue;
 			}
 			// Make sure to store a non null request if we ever find one
