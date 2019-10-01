@@ -36,6 +36,32 @@ public class Resources {
     }
 
     /**
+     * Saves a file with specified content to user.dir/directory/fileName
+     * @param directory the directory to save to
+     * @param fileName the name of the file to be wrote
+     * @param content The string to be wrote to a file (could be json, etc.)
+     * @return true if the file is successfully saved
+     */
+    public static boolean SaveFile(String directory, String fileName, String content){
+        try {
+            String dir = System.getProperty("user.dir");
+            Path path = Paths.get(dir + "/config/" + directory);
+
+            if (!Files.exists(path)) {
+                path.toFile().mkdirs();
+            }
+
+            FileWriter fw = new FileWriter(path.toString() + "/" + fileName);
+            fw.write(content);
+            fw.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * Loads a file from user.dir/pluginName/fileName
      * @param plugin the plugin attempting to load a file
      * @param fileName the name of the file to be loaded
@@ -50,9 +76,29 @@ public class Resources {
                 return null;
             }
 
-            File file = new File(path.toString() + "/" + fileName);
-            // BufferedReader br = new BufferedReader(new FileReader(file));
-            return file;
+            return new File(path.toString() + "/" + fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Loads a file from user.dir/directory/fileName
+     * @param directory the directory to load from
+     * @param fileName the name of the file to be loaded
+     * @return File object to be read by the plugin. May be null
+     */
+    public static File LoadFile(String directory, String fileName){
+        try {
+            String dir = System.getProperty("user.dir");
+            Path path = Paths.get(dir + "/config/" + directory);
+
+            if (!Files.exists(path)) {
+                return null;
+            }
+
+            return new File(path.toString() + "/" + fileName);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -69,13 +115,44 @@ public class Resources {
      */
     public static boolean SerializeFile(BotPlugin plugin, String fileName, Object toSave){
         try {
-            //TODO: Make this throw an exception later
-            if (!(plugin instanceof java.io.Serializable)){
+            if (!(toSave instanceof java.io.Serializable)){
                 return false;
             }
 
             String dir = System.getProperty("user.dir");
             Path path = Paths.get(dir + "/config/" + plugin.getName());
+
+            if (!Files.exists(path)) {
+                path.toFile().mkdirs();
+            }
+
+            FileOutputStream fos = new FileOutputStream(path.toString() + "/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(toSave);
+            oos.close();
+            return true;
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Serializes an object to a file located in user.dir/plugin_name/filename
+     * In order to use this method the BotPlugin object passed as a parameter must be implementing Serializable
+     * @param directory the directory to save to
+     * @param fileName the name of the file to be saved, must include an extension
+     * @param toSave the Object to be saved
+     * @return true if the file is successfully wrote
+     */
+    public static boolean SerializeFile(String directory, String fileName, Object toSave){
+        try {
+            if (!(toSave instanceof java.io.Serializable)){
+                return false;
+            }
+
+            String dir = System.getProperty("user.dir");
+            Path path = Paths.get(dir + "/config/" + directory);
 
             if (!Files.exists(path)) {
                 path.toFile().mkdirs();
@@ -101,15 +178,33 @@ public class Resources {
      */
     public static ObjectInputStream LoadSerializedFile(BotPlugin plugin, String fileName){
         try {
-            //TODO: Make this throw an exception later
-            if (!(plugin instanceof java.io.Serializable)){
-                return null;
-            }
-
             String dir = System.getProperty("user.dir");
             Path path = Paths.get(dir + "/config/" + plugin.getName());
 
-            //TODO: Make this throw an exception later
+            if (!Files.exists(path)) {
+                return null;
+            }
+
+            FileInputStream fis = new FileInputStream(path.toString() + "/" + fileName);
+            return new ObjectInputStream(fis);
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Loads and returns a ObjectInputStream for the given filename
+     * After the plugin is done loading data it should close the file with .close()
+     * @param directory The directory to load the file from
+     * @param fileName The filename to be loaded including extension
+     * @return ObjectInputStream for the given file that must be closed after done. May return null
+     */
+    public static ObjectInputStream LoadSerializedFile(String directory, String fileName){
+        try {
+            String dir = System.getProperty("user.dir");
+            Path path = Paths.get(dir + "/config/" + directory);
+
             if (!Files.exists(path)) {
                 return null;
             }
