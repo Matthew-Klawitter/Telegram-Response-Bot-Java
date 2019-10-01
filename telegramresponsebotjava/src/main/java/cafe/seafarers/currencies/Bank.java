@@ -27,7 +27,9 @@ public class Bank {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 accounts = gson.fromJson(br, token.getType());
             }
-            accounts = new HashMap<String, Account>();
+            else {
+                accounts = new HashMap<String, Account>();
+            }
         } catch (FileNotFoundException e){
             e.printStackTrace();
             accounts = new HashMap<String, Account>();
@@ -135,7 +137,7 @@ public class Bank {
         }
     }
 
-    private boolean save(){
+    public boolean save(){
         Gson gson = new Gson();
         String json = gson.toJson(accounts);
         if (Resources.SaveFile(BANK_DIRECTORY, BANK_FILE, json))
