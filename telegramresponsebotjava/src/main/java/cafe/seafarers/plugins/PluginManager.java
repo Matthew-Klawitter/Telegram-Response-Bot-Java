@@ -15,6 +15,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import cafe.seafarers.MapStack;
+
 public class PluginManager {
 	// Map of command strings to BotPlugins, used to call Plugins when a valid
 	// command is received
@@ -25,6 +27,8 @@ public class PluginManager {
 	private Set<BotPlugin> messagePlugins;
 	// Directory all plugins are stored in
 	private String pluginDirPath;
+	// Message Ids and their plugins that send them
+	private MapStack<Long, BotPlugin> messages;
 
 	public PluginManager(String pluginPath) {
 		this.plugins = new HashMap<BotPlugin, Boolean>();
@@ -54,6 +58,17 @@ public class PluginManager {
 			return instantiateImported(pluginClasses);
 		}
 		return false;
+	}
+	
+	/**
+	 * Prints the loaded bot commands
+	 */
+	public void printCommands() {
+		System.out.println("Commands:");
+		for(String command : commands.keySet()) {
+			System.out.print("\t");
+			System.out.println(command);
+		}
 	}
 
 	/**
@@ -131,6 +146,7 @@ public class PluginManager {
 				response.append("\n");
 			}
 			return new SendMessage(chatId, response.toString());
+		case "start": // Same as /help
 		case "help":
 			if (getPluginByName(args) == null) {
 				return new SendMessage(chatId,
