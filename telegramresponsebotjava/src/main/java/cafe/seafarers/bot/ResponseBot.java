@@ -6,6 +6,8 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.SendLocation;
+import com.pengrad.telegrambot.response.BaseResponse;
 
 import cafe.seafarers.plugins.PluginManager;
 
@@ -25,6 +27,13 @@ public class ResponseBot {
 					for (Update update : list) {
 						BaseRequest request = null;
 						if(update.message().text() == null) {
+							if(request instanceof SendLocation) {
+								SendLocation location = (SendLocation) request;
+								System.out.println(location.getParameters().get("latitude"));
+								System.out.println(location.getParameters().get("longitude"));
+								System.out.println("location!");	
+							}
+							System.out.println(update);
 							continue;
 						}
 						if (update.message().text().startsWith("/")) {
