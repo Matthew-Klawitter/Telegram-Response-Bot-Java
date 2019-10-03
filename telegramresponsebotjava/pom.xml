@@ -20,8 +20,6 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>cafe.seafarers.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
