@@ -78,12 +78,13 @@ public class ResponseBot {
 
 		public void run() {
 			try {
-				Thread.sleep(delay * 1000);
-				List<BaseRequest> requests = manager.updatePeriodically();
-				for (BaseRequest request : requests) {
-					bot.execute(request);
+				while (true) {
+					Thread.sleep(delay * 1000);
+					List<BaseRequest> requests = manager.updatePeriodically();
+					for (BaseRequest request : requests) {
+						bot.execute(request);
+					}
 				}
-
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -5,10 +5,9 @@ import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -17,8 +16,10 @@ import com.pengrad.telegrambot.request.SendMessage;
 import cafe.seafarers.config.Resources;
 
 public class MumblePlugin implements BotPlugin {
-	private static final String[] COMMANDS = { "mstatus" };
+	private static final String[] COMMANDS = { "mstatus", "menable", "mdisable" };
 	private String dnsName;
+	private Set<Long> enabledChannels;
+	private int users;
 
 	@Override
 	public BaseRequest onCommand(Update update) {
@@ -27,6 +28,12 @@ public class MumblePlugin implements BotPlugin {
 		switch (command) {
 		case "mstatus":
 			return new SendMessage(update.message().chat().id(), "There are " + getUsers() + " users connected.");
+		case "menable":
+			enabledChannels.add(update.message().chat().id());
+			return new SendMessage(update.message().chat().id(), "Enabled mumble status.");
+		case "mdisable":
+			enabledChannels.remove(update.message().chat().id());
+			return new SendMessage(update.message().chat().id(), "Enabled mumble status.");
 		}
 		return null;
 	}
@@ -60,8 +67,20 @@ public class MumblePlugin implements BotPlugin {
 		return -1;
 	}
 
+	private String getConnectedUserMessage(int newUserCount) {
+		StringBuffer sb = new StringBuffer();
+		if (newUserCount < users) {
+			sb.append("A user has disconnected from the server. There are now ");
+		} else {
+			sb.append("A user has connected to the server. There are now ");
+		}
+		sb.append(newUserCount);
+		sb.append(" users connected.");
+		return sb.toString();
+	}
+
 	/**
-	 * Tranlate the given long into the array b starting at index offset
+	 * Translate the given long into the array b starting at index offset
 	 */
 	private static void longToByteArray(long l, byte[] b, int offset) {
 		b[7 + offset] = (byte) (l);
@@ -117,6 +136,8 @@ public class MumblePlugin implements BotPlugin {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		enabledChannels = new HashSet<Long>();
+		users = 0;
 		return true;
 	}
 
@@ -132,11 +153,19 @@ public class MumblePlugin implements BotPlugin {
 
 	@Override
 	public String getHelp() {
-		return "/mstatus";
+		return "/mstatus\n/menable\n/mdisable";
 	}
 
 	@Override
 	public BaseRequest periodicUpdate() {
+		int newUsers = getUsers();
+		if (users != newUsers) {
+			String connectedString = getConnectedUserMessage(newUsers);
+			users = newUsers;
+			for (Long id : enabledChannels) {
+				return new SendMessage(id, connectedString);
+			}
+		}
 		return null;
 	}
 }
