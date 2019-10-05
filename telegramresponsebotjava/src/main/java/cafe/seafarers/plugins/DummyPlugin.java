@@ -75,4 +75,9 @@ public class DummyPlugin implements BotPlugin {
 		}
 
 	}
+	
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
+	}
 }

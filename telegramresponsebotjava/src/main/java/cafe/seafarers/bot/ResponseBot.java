@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendLocation;
 import com.pengrad.telegrambot.response.BaseResponse;
+import com.sun.source.util.Plugin;
 
 import cafe.seafarers.plugins.PluginManager;
 
@@ -25,25 +26,22 @@ public class ResponseBot {
 			bot.setUpdatesListener(new UpdatesListener() {
 				public int process(List<Update> list) {
 					for (Update update : list) {
-						BaseRequest request = null;
-						if(update.message().text() == null) {
-							if(request instanceof SendLocation) {
-								SendLocation location = (SendLocation) request;
-								System.out.println(location.getParameters().get("latitude"));
-								System.out.println(location.getParameters().get("longitude"));
-								System.out.println("location!");	
-							}
-							System.out.println(update);
+						if (update.message().text() == null) {
+							System.out.println(update.message().toString());
 							continue;
 						}
 						if (update.message().text().startsWith("/")) {
-							request = manager.handleCommand(update);
+							BaseRequest request = manager.handleCommand(update);
+							if (request != null) {
+								bot.execute(request);
+							}
 						} else {
-							request = manager.handleMessage(update);
+							List<BaseRequest> requests = manager.handleMessage(update);
+							for (BaseRequest request : requests) {
+								bot.execute(request);
+							}
 						}
-						if (request != null) {
-							bot.execute(request);
-						}
+
 					}
 					return UpdatesListener.CONFIRMED_UPDATES_ALL;
 				}
@@ -53,7 +51,6 @@ public class ResponseBot {
 			return true;
 		}
 		return false;
-
 	}
 
 	public boolean stopUpdateListener() {
@@ -63,5 +60,34 @@ public class ResponseBot {
 			return true;
 		}
 		return false;
+	}
+
+	public void startPeriodicUpdateListener(PluginManager manager, int delay) {
+		PeriodicUpdateThread thread = new PeriodicUpdateThread(manager, delay);
+		thread.start();
+	}
+
+	private class PeriodicUpdateThread extends Thread {
+		PluginManager manager;
+		int delay;
+
+		public PeriodicUpdateThread(PluginManager manager, int secondDelay) {
+			this.manager = manager;
+			this.delay = secondDelay;
+		}
+
+		public void run() {
+			try {
+				Thread.sleep(delay * 1000);
+				List<BaseRequest> requests = manager.updatePeriodically();
+				for (BaseRequest request : requests) {
+					bot.execute(request);
+				}
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

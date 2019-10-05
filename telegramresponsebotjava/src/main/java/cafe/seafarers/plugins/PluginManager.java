@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,8 +26,11 @@ public class PluginManager {
 	private HashMap<BotPlugin, Boolean> plugins;
 	// Set of plugins that receive each message updates
 	private Set<BotPlugin> messagePlugins;
+	// Set of plugins that receive each periodic updates
+	private Set<BotPlugin> periodicPlugins;
 	// Directory all plugins are stored in
 	private String pluginDirPath;
+	// TODO unused currently
 	// Message Ids and their plugins that send them
 	private MapStack<Long, BotPlugin> messages;
 
@@ -197,8 +201,8 @@ public class PluginManager {
 		}
 	}
 
-	public BaseRequest handleMessage(Update update) {
-		BaseRequest request = null;
+	public List<BaseRequest> handleMessage(Update update) {
+		List<BaseRequest> requests = new ArrayList<BaseRequest>();
 		for (BotPlugin plugin : messagePlugins) {
 			// Skip if plugin isn't enabled
 			if (!plugins.get(plugin)) {
@@ -207,10 +211,26 @@ public class PluginManager {
 			// Make sure to store a non null request if we ever find one
 			BaseRequest newRequest = plugin.onMessage(update);
 			if (newRequest != null) {
-				request = newRequest;
+				requests.add(newRequest);
 			}
 		}
-		return request;
+		return requests;
+	}
+	
+	public List<BaseRequest> updatePeriodically() {
+		List<BaseRequest> updates = new ArrayList<BaseRequest>();
+		for (BotPlugin plugin : plugins.keySet()) {
+			// Skip if plugin isn't enabled
+			if (!plugins.get(plugin)) {
+				continue;
+			}
+			// Make sure to store a non null request if we ever find one
+			BaseRequest newRequest = plugin.periodicUpdate();
+			if (newRequest != null) {
+				updates.add(newRequest);
+			}
+		}
+		return updates;
 	}
 
 	private String getPluginHelp(String pluginName) {
@@ -263,5 +283,4 @@ public class PluginManager {
 	public void processPlugin(BotPlugin plugin) {
 
 	}
-
 }

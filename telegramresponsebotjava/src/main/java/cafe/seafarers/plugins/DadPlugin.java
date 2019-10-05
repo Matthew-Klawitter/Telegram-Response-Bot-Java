@@ -61,4 +61,9 @@ public class DadPlugin implements BotPlugin {
 	public String getHelp() {
 		return "I'm dad!\n";
 	}
+	
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
+	}
 }

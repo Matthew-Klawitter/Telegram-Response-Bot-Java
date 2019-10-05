@@ -50,8 +50,8 @@ public class MumblePlugin implements BotPlugin {
 			serverSocket.receive(receivePacket);
 			byte[] response = receivePacket.getData();
 			// Format ping data
-			int users = (response[15] & 0xFF) | ((response[14] & 0xFF) << 8) |
-	                  ((response[13] & 0xFF) << 16) | ((response[12] & 0xFF) << 24);  
+			int users = (response[15] & 0xFF) | ((response[14] & 0xFF) << 8) | ((response[13] & 0xFF) << 16)
+					| ((response[12] & 0xFF) << 24);
 			datagramSocket.close();
 			return users;
 		} catch (Exception e) {
@@ -133,5 +133,10 @@ public class MumblePlugin implements BotPlugin {
 	@Override
 	public String getHelp() {
 		return "/mstatus";
+	}
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
 	}
 }

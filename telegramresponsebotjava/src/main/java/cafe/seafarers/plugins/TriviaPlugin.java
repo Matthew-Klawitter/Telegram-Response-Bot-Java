@@ -45,12 +45,12 @@ public class TriviaPlugin implements BotPlugin {
 			}
 			return false;
 		}
-		
+
 		public String getAnswer() {
 			StringBuffer sb = new StringBuffer();
 			for (String ans : answers) {
-				if(sb.length() > 0) {
-					sb.append(" or " );
+				if (sb.length() > 0) {
+					sb.append(" or ");
 				}
 				sb.append(ans);
 			}
@@ -104,7 +104,7 @@ public class TriviaPlugin implements BotPlugin {
 		public boolean checkAnswer(String guess) {
 			return getRound().checkAnswer(guess);
 		}
-		
+
 		public String getAnswer() {
 			return getRound().getAnswer();
 		}
@@ -197,13 +197,13 @@ public class TriviaPlugin implements BotPlugin {
 		case "trivialist":
 			StringBuffer sb = new StringBuffer("Avaliable trivia games:\n");
 			for (String name : trivia.keySet()) {
-				if(sb.length() > 4000) {
+				if (sb.length() > 4000) {
 					continue;
 				}
 				sb.append(name);
 				sb.append("\n");
 			}
-			if(sb.length() > 4000) {
+			if (sb.length() > 4000) {
 				sb.append("and more...");
 			}
 			return new SendMessage(update.message().chat().id(), sb.toString());
@@ -224,10 +224,10 @@ public class TriviaPlugin implements BotPlugin {
 		}
 		return null;
 	}
-	
+
 	private BaseRequest nextQuestion(TriviaGame game, Update update, boolean skipped) {
 		StringBuffer sb = new StringBuffer();
-		if(skipped) {
+		if (skipped) {
 			sb.append("Skipped question, no points.\nThe answer was '");
 			sb.append(game.getAnswer());
 			sb.append("'\n");
@@ -240,13 +240,13 @@ public class TriviaPlugin implements BotPlugin {
 		game.nextRound();
 		if (game.isGameOver()) {
 			sb.append("Game Over!\n\n");
-			if(game.getWinnerUser() != null) {
+			if (game.getWinnerUser() != null) {
 				sb.append(game.getWinnerUser());
 				sb.append(" has won!");
 			} else {
 				sb.append("Nobody won!");
 			}
-			
+
 			game.reset();
 			currentGames.remove(update.message().chat().id());
 		} else {
@@ -337,5 +337,10 @@ public class TriviaPlugin implements BotPlugin {
 	@Override
 	public String getHelp() {
 		return "/trivia <name> - Starts trivia game with name\n/trivialist - list all trivia games\n/trivianew <name>- create a new trivia game\n/triviastop - end current trivia game";
+	}
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
 	}
 }

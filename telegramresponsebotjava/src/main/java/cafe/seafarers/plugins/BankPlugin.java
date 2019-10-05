@@ -85,4 +85,9 @@ public class BankPlugin implements BotPlugin {
     public boolean hasMessageAccess() {
         return false;
     }
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
+	}
 }
