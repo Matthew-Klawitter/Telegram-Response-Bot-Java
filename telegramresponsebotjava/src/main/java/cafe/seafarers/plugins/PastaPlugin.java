@@ -30,7 +30,7 @@ public class PastaPlugin implements BotPlugin {
 			}
 			return new SendMessage(update.message().chat().id(), sb.toString());
 		case "pastanew":
-			String[] lines = args.split("\n", 2); 
+			String[] lines = args.split("\n", 2);
 			pasta.put(lines[0], lines[1]);
 			return new SendMessage(update.message().chat().id(), "Created pasta: " + lines[0]);
 		case "pasta":
@@ -95,5 +95,10 @@ public class PastaPlugin implements BotPlugin {
 	@Override
 	public String getHelp() {
 		return "Sends a pasta\n/pasta <name?>\n/pastalist\n/pastanew <pasta name>...\nPasta";
+	}
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
 	}
 }

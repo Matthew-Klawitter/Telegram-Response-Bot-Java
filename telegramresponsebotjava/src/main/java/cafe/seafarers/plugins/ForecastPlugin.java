@@ -203,4 +203,9 @@ public class ForecastPlugin implements BotPlugin {
 	public String getHelp() {
 		return "/forecast to get the weather\n";
 	}
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
+	}
 }

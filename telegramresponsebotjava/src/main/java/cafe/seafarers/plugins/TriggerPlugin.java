@@ -9,7 +9,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public class TriggerPlugin implements BotPlugin {
-	private static final String[] COMMANDS = { "triggerlist", "triggernew"};
+	private static final String[] COMMANDS = { "triggerlist", "triggernew" };
 	private HashMap<String, ArrayList<String>> triggers;
 	private Random random;
 
@@ -17,13 +17,13 @@ public class TriggerPlugin implements BotPlugin {
 	public BaseRequest onCommand(Update update) {
 		String message = update.message().text().substring(1).toLowerCase();
 		String command = message.split("[ @]")[0];
-		switch(command) {
+		switch (command) {
 		case "triggerlist":
-			if(triggers.size() == 0) {
+			if (triggers.size() == 0) {
 				return new SendMessage(update.message().chat().id(), "No triggers set");
 			}
 			StringBuffer sb = new StringBuffer();
-			for(String trigger : triggers.keySet()) {
+			for (String trigger : triggers.keySet()) {
 				sb.append(trigger);
 				sb.append("\n");
 			}
@@ -32,7 +32,7 @@ public class TriggerPlugin implements BotPlugin {
 			String args = message.substring(command.length()).trim();
 			String[] lines = args.split("\n");
 			ArrayList<String> responses = new ArrayList<String>();
-			for(String response : lines) {
+			for (String response : lines) {
 				responses.add(response);
 			}
 			String trigger = responses.remove(0);
@@ -94,5 +94,10 @@ public class TriggerPlugin implements BotPlugin {
 	@Override
 	public String getHelp() {
 		return "Automatically responses to a trigger word\n/triggerlist\n/triggernew <trigger>...\nresponse1\nresponse2...";
+	}
+
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
 	}
 }

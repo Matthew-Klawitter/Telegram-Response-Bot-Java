@@ -28,6 +28,11 @@ public interface BotPlugin {
      * @return true if this plugin should receive all messages
      */
     public boolean hasMessageAccess();
+    
+    /**
+     * implement if you need an update on a period
+     */
+    public BaseRequest periodicUpdate();
 
     /**
      * The name of the plugin

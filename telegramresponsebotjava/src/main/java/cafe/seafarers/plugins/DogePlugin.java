@@ -140,4 +140,9 @@ public class DogePlugin implements BotPlugin {
 	public String getHelp() {
 		return "/doge\n";
 	}
+	
+	@Override
+	public BaseRequest periodicUpdate() {
+		return null;
+	}
 }
