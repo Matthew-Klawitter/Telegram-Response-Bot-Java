@@ -135,7 +135,9 @@ public class MumblePlugin implements BotPlugin {
 			fileIn.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
+		} catch (NullPointerException e){
+		    e.printStackTrace();
+        }
 		enabledChannels = new HashSet<Long>();
 		users = 0;
 		return true;

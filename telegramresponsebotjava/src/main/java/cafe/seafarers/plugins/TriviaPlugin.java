@@ -318,6 +318,8 @@ public class TriviaPlugin implements BotPlugin {
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e){
+			e.printStackTrace();
 		}
 
 		System.out.println(trivia.size() + " trivia games");

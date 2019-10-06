@@ -185,6 +185,8 @@ public class ForecastPlugin implements BotPlugin {
 			fileIn.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e){
+			e.printStackTrace();
 		}
 		return true;
 	}
