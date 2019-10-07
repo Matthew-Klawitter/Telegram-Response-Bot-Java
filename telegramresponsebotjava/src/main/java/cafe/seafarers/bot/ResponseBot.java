@@ -26,23 +26,30 @@ public class ResponseBot {
 			bot.setUpdatesListener(new UpdatesListener() {
 				public int process(List<Update> list) {
 					for (Update update : list) {
-						if (update.message().text() == null) {
-							System.out.println(update.message().toString());
-							continue;
-						}
-						if (update.message().text().startsWith("/")) {
-							BaseRequest request = manager.handleCommand(update);
-							if (request != null) {
-								bot.execute(request);
+						try {
+							if (update.message().text() == null) {
+								System.out.println(update.message().toString());
+								continue;
 							}
-						} else {
-							List<BaseRequest> requests = manager.handleMessage(update);
-							for (BaseRequest request : requests) {
-								bot.execute(request);
+							if (update.message().text().startsWith("/")) {
+								BaseRequest request = manager.handleCommand(update);
+								if (request != null) {
+									bot.execute(request);
+								}
+							} else {
+								List<BaseRequest> requests = manager.handleMessage(update);
+								for (BaseRequest request : requests) {
+									bot.execute(request);
+								}
 							}
-						}
 
+						}
+						catch (NullPointerException e){
+							e.printStackTrace();
+							return UpdatesListener.CONFIRMED_UPDATES_ALL;
+						}
 					}
+
 					return UpdatesListener.CONFIRMED_UPDATES_ALL;
 				}
 			});
