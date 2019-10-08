@@ -143,8 +143,11 @@ public class TriviaPlugin implements BotPlugin {
 					winner += ", " + e.getKey();
 				}
 			}
-
-			return winner + sb.toString();
+			if (winner != null) {
+				return winner + " has won!\n" + sb.toString();
+			} else {
+				return "Nobody won!\n" + sb.toString();
+			}
 		}
 	}
 
@@ -225,7 +228,7 @@ public class TriviaPlugin implements BotPlugin {
 		currentGuesses.put(id, currentGuesses.get(id) + 1);
 		if (game != null && game.checkAnswer(update.message().text())) {
 			return nextQuestion(game, update, false);
-		} else if(currentGuesses.get(id) > 10) {
+		} else if (currentGuesses.get(id) > 10) {
 			return nextQuestion(game, update, true);
 		}
 		return null;
@@ -247,12 +250,7 @@ public class TriviaPlugin implements BotPlugin {
 		game.nextRound();
 		if (game.isGameOver()) {
 			sb.append("Game Over!\n\n");
-			if (game.getWinnerUser() != null) {
-				sb.append(game.getWinnerUser());
-				sb.append(" has won!");
-			} else {
-				sb.append("Nobody won!");
-			}
+			sb.append(game.getWinnerUser());
 
 			game.reset();
 			currentGames.remove(update.message().chat().id());
