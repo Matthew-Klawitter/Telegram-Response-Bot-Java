@@ -261,6 +261,8 @@ public class TriviaPlugin implements BotPlugin {
 
 			game.reset();
 			currentGames.remove(id);
+			currentGuesses.remove(id);
+			currentTimeLimits.remove(id);
 		} else {
 			sb.append("Round ");
 			sb.append(game.getCurrentRound());
