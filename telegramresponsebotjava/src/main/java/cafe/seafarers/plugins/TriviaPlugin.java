@@ -25,9 +25,6 @@ public class TriviaPlugin implements BotPlugin {
 
 		public TriviaRound(String question) {
 			this.answers = new ArrayList<String>();
-//			for (String answer : answers) {
-//				this.answers.add(answer.toLowerCase().trim());
-//			}
 			this.question = question;
 		}
 
@@ -130,6 +127,7 @@ public class TriviaPlugin implements BotPlugin {
 
 		public String getWinnerUser() {
 			String winner = null;
+			StringBuffer sb = new StringBuffer("\nScores:\n");
 			// Get one winner
 			for (Entry<String, Integer> e : score.entrySet()) {
 				if (winner == null) {
@@ -137,6 +135,7 @@ public class TriviaPlugin implements BotPlugin {
 				} else if (score.get(winner) > e.getValue()) {
 					winner = e.getKey();
 				}
+				sb.append(e.getKey() + "\t" + e.getValue() + "\n");
 			}
 			// Check if others tied
 			for (Entry<String, Integer> e : score.entrySet()) {
@@ -144,7 +143,8 @@ public class TriviaPlugin implements BotPlugin {
 					winner += ", " + e.getKey();
 				}
 			}
-			return winner;
+
+			return winner + sb.toString();
 		}
 	}
 
@@ -154,6 +154,8 @@ public class TriviaPlugin implements BotPlugin {
 
 	// Chat Id to Current Game
 	private HashMap<Long, TriviaGame> currentGames;
+	// Chat Id to Current guesses
+	private HashMap<Long, Integer> currentGuesses;
 
 	private Random random;
 
@@ -183,7 +185,7 @@ public class TriviaPlugin implements BotPlugin {
 				sb.append("' is the game.\n");
 				sb.append("Starting round " + game.getCurrentRound() + "\n\n");
 				sb.append(game.getQuestion());
-
+				currentGuesses.put(update.message().chat().id(), 0);
 				return new SendMessage(update.message().chat().id(), sb.toString());
 			} else {
 				return new SendMessage(update.message().chat().id(), "That trivia game doesn't exist");
@@ -218,14 +220,19 @@ public class TriviaPlugin implements BotPlugin {
 
 	@Override
 	public BaseRequest onMessage(Update update) {
-		TriviaGame game = currentGames.get(update.message().chat().id());
+		long id = update.message().chat().id();
+		TriviaGame game = currentGames.get(id);
+		currentGuesses.put(id, currentGuesses.get(id) + 1);
 		if (game != null && game.checkAnswer(update.message().text())) {
 			return nextQuestion(game, update, false);
+		} else if(currentGuesses.get(id) > 10) {
+			return nextQuestion(game, update, true);
 		}
 		return null;
 	}
 
 	private BaseRequest nextQuestion(TriviaGame game, Update update, boolean skipped) {
+		currentGuesses.put(update.message().chat().id(), 0);
 		StringBuffer sb = new StringBuffer();
 		if (skipped) {
 			sb.append("Skipped question, no points.\nThe answer was '");
@@ -291,6 +298,7 @@ public class TriviaPlugin implements BotPlugin {
 		random = new Random();
 		trivia = new HashMap<String, TriviaGame>();
 		currentGames = new HashMap<Long, TriviaGame>();
+		currentGuesses = new HashMap<Long, Integer>();
 
 		try {
 			File file = Resources.LoadFile(this, "trivia.txt");
@@ -318,7 +326,7 @@ public class TriviaPlugin implements BotPlugin {
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 
