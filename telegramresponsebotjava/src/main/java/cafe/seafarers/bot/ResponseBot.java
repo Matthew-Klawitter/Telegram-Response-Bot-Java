@@ -42,11 +42,11 @@ public class ResponseBot {
 									bot.execute(request);
 								}
 							}
-
-						}
-						catch (NullPointerException e){
+						} catch (Exception e) {
+							System.out.println("Error!");
 							e.printStackTrace();
-							return UpdatesListener.CONFIRMED_UPDATES_ALL;
+							System.out.println("Cased by update:");
+							System.out.println(update.toString());
 						}
 					}
 
@@ -58,6 +58,7 @@ public class ResponseBot {
 			return true;
 		}
 		return false;
+
 	}
 
 	public boolean stopUpdateListener() {
