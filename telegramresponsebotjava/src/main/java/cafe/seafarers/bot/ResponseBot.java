@@ -26,6 +26,7 @@ public class ResponseBot {
 			bot.setUpdatesListener(new UpdatesListener() {
 				public int process(List<Update> list) {
 					for (Update update : list) {
+						try {
 						if (update.message().text() == null) {
 							System.out.println(update.message().toString());
 							continue;
@@ -40,6 +41,12 @@ public class ResponseBot {
 							for (BaseRequest request : requests) {
 								bot.execute(request);
 							}
+						}
+						} catch (Exception e) {
+							System.out.println("Error!");
+							e.printStackTrace();
+							System.out.println("Cased by update:");
+							System.out.println(update.toString());
 						}
 
 					}
