@@ -134,7 +134,7 @@ public class TriviaPlugin implements BotPlugin {
 			for (Entry<String, Integer> e : score.entrySet()) {
 				if (winner == null) {
 					winner = e.getKey();
-				} else if (score.get(winner) > e.getValue()) {
+				} else if (e.getValue() > score.get(winner)) { // If new user is greater, update winner
 					winner = e.getKey();
 				}
 				sb.append(e.getKey() + ":\t" + e.getValue() + "\n");
@@ -364,7 +364,7 @@ public class TriviaPlugin implements BotPlugin {
 			TriviaGame game = currentGames.get(id);
 			long diff = System.currentTimeMillis() - currentTimeLimits.get(id);
 			// Skip if question has been going on for 5 minutes
-			if (game != null && (diff > 1000*60*5)) {
+			if (game != null && (diff > 1000 * 60 * 5)) {
 				return nextQuestion(game, id, null, true);
 			}
 		}
