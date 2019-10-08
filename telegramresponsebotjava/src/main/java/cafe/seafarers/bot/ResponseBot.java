@@ -27,29 +27,29 @@ public class ResponseBot {
 				public int process(List<Update> list) {
 					for (Update update : list) {
 						try {
-						if (update.message().text() == null) {
-							System.out.println(update.message().toString());
-							continue;
-						}
-						if (update.message().text().startsWith("/")) {
-							BaseRequest request = manager.handleCommand(update);
-							if (request != null) {
-								bot.execute(request);
+							if (update.message().text() == null) {
+								System.out.println(update.message().toString());
+								continue;
 							}
-						} else {
-							List<BaseRequest> requests = manager.handleMessage(update);
-							for (BaseRequest request : requests) {
-								bot.execute(request);
+							if (update.message().text().startsWith("/")) {
+								BaseRequest request = manager.handleCommand(update);
+								if (request != null) {
+									bot.execute(request);
+								}
+							} else {
+								List<BaseRequest> requests = manager.handleMessage(update);
+								for (BaseRequest request : requests) {
+									bot.execute(request);
+								}
 							}
-						}
 						} catch (Exception e) {
 							System.out.println("Error!");
 							e.printStackTrace();
 							System.out.println("Cased by update:");
 							System.out.println(update.toString());
 						}
-
 					}
+
 					return UpdatesListener.CONFIRMED_UPDATES_ALL;
 				}
 			});
@@ -58,6 +58,7 @@ public class ResponseBot {
 			return true;
 		}
 		return false;
+
 	}
 
 	public boolean stopUpdateListener() {
