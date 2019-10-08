@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -25,9 +27,6 @@ public class TriviaPlugin implements BotPlugin {
 
 		public TriviaRound(String question) {
 			this.answers = new ArrayList<String>();
-//			for (String answer : answers) {
-//				this.answers.add(answer.toLowerCase().trim());
-//			}
 			this.question = question;
 		}
 
@@ -38,8 +37,8 @@ public class TriviaPlugin implements BotPlugin {
 		public boolean checkAnswer(String guess) {
 			String cleanedGuess = guess.toLowerCase().trim();
 			for (String possibleMatch : answers) {
-				// If the answer is contained in the guess, the guess is write
-				if (cleanedGuess.contains(possibleMatch)) {
+				int diff = new LevenshteinDistance().apply(possibleMatch, cleanedGuess);
+				if (diff <= 2) { // Exact match or 2 characters wrong/removed
 					return true;
 				}
 			}
@@ -130,6 +129,7 @@ public class TriviaPlugin implements BotPlugin {
 
 		public String getWinnerUser() {
 			String winner = null;
+			StringBuffer sb = new StringBuffer("\nScores:\n");
 			// Get one winner
 			for (Entry<String, Integer> e : score.entrySet()) {
 				if (winner == null) {
@@ -137,6 +137,7 @@ public class TriviaPlugin implements BotPlugin {
 				} else if (score.get(winner) > e.getValue()) {
 					winner = e.getKey();
 				}
+				sb.append(e.getKey() + ":\t" + e.getValue() + "\n");
 			}
 			// Check if others tied
 			for (Entry<String, Integer> e : score.entrySet()) {
@@ -144,7 +145,12 @@ public class TriviaPlugin implements BotPlugin {
 					winner += ", " + e.getKey();
 				}
 			}
-			return winner;
+			// Return final scoreboard
+			if (winner != null) {
+				return winner + " has won!\n" + sb.toString();
+			} else {
+				return "Nobody won!\n" + sb.toString();
+			}
 		}
 	}
 
@@ -154,6 +160,10 @@ public class TriviaPlugin implements BotPlugin {
 
 	// Chat Id to Current Game
 	private HashMap<Long, TriviaGame> currentGames;
+	// Chat Id to Current guesses
+	private HashMap<Long, Integer> currentGuesses;
+	// Chat Id to original question time
+	private HashMap<Long, Long> currentTimeLimits;
 
 	private Random random;
 
@@ -183,7 +193,8 @@ public class TriviaPlugin implements BotPlugin {
 				sb.append("' is the game.\n");
 				sb.append("Starting round " + game.getCurrentRound() + "\n\n");
 				sb.append(game.getQuestion());
-
+				currentGuesses.put(update.message().chat().id(), 0);
+				currentTimeLimits.put(update.message().chat().id(), System.currentTimeMillis());
 				return new SendMessage(update.message().chat().id(), sb.toString());
 			} else {
 				return new SendMessage(update.message().chat().id(), "That trivia game doesn't exist");
@@ -191,7 +202,7 @@ public class TriviaPlugin implements BotPlugin {
 		case "trivianext":
 			TriviaGame game = currentGames.get(update.message().chat().id());
 			if (game != null) {
-				return nextQuestion(game, update, true);
+				return nextQuestion(game, update.message().chat().id(), update.message().from(), true);
 			}
 			return new SendMessage(update.message().chat().id(), "There is no active game");
 		case "trivialist":
@@ -218,44 +229,47 @@ public class TriviaPlugin implements BotPlugin {
 
 	@Override
 	public BaseRequest onMessage(Update update) {
-		TriviaGame game = currentGames.get(update.message().chat().id());
+		long id = update.message().chat().id();
+		TriviaGame game = currentGames.get(id);
+		currentGuesses.put(id, currentGuesses.get(id) + 1);
 		if (game != null && game.checkAnswer(update.message().text())) {
-			return nextQuestion(game, update, false);
+			return nextQuestion(game, update.message().chat().id(), update.message().from(), false);
+		} else if (currentGuesses.get(id) > 10) {
+			return nextQuestion(game, update.message().chat().id(), update.message().from(), true);
 		}
 		return null;
 	}
 
-	private BaseRequest nextQuestion(TriviaGame game, Update update, boolean skipped) {
+	private BaseRequest nextQuestion(TriviaGame game, long id, User from, boolean skipped) {
+		currentGuesses.put(id, 0);
+		currentTimeLimits.put(id, System.currentTimeMillis());
 		StringBuffer sb = new StringBuffer();
 		if (skipped) {
 			sb.append("Skipped question, no points.\nThe answer was '");
 			sb.append(game.getAnswer());
 			sb.append("'\n");
 		} else {
-			game.givePoints(getCanonicalName(update.message().from()));
+			game.givePoints(getCanonicalName(from));
 			sb.append("Correct ");
-			sb.append(getCanonicalName(update.message().from()));
+			sb.append(getCanonicalName(from));
 			sb.append("!\n");
 		}
 		game.nextRound();
 		if (game.isGameOver()) {
 			sb.append("Game Over!\n\n");
-			if (game.getWinnerUser() != null) {
-				sb.append(game.getWinnerUser());
-				sb.append(" has won!");
-			} else {
-				sb.append("Nobody won!");
-			}
+			sb.append(game.getWinnerUser());
 
 			game.reset();
-			currentGames.remove(update.message().chat().id());
+			currentGames.remove(id);
+			currentGuesses.remove(id);
+			currentTimeLimits.remove(id);
 		} else {
 			sb.append("Round ");
 			sb.append(game.getCurrentRound());
 			sb.append("\n\n");
 			sb.append(game.getQuestion());
 		}
-		return new SendMessage(update.message().chat().id(), sb.toString());
+		return new SendMessage(id, sb.toString());
 	}
 
 	private String getCanonicalName(User user) {
@@ -291,6 +305,8 @@ public class TriviaPlugin implements BotPlugin {
 		random = new Random();
 		trivia = new HashMap<String, TriviaGame>();
 		currentGames = new HashMap<Long, TriviaGame>();
+		currentGuesses = new HashMap<Long, Integer>();
+		currentTimeLimits = new HashMap<Long, Long>();
 
 		try {
 			File file = Resources.LoadFile(this, "trivia.txt");
@@ -318,7 +334,7 @@ public class TriviaPlugin implements BotPlugin {
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 
@@ -343,6 +359,15 @@ public class TriviaPlugin implements BotPlugin {
 
 	@Override
 	public BaseRequest periodicUpdate() {
+		// If any game is
+		for (long id : currentTimeLimits.keySet()) {
+			TriviaGame game = currentGames.get(id);
+			long diff = System.currentTimeMillis() - currentTimeLimits.get(id);
+			// Skip if question has been going on for 5 minutes
+			if (game != null && (diff > 1000*60*5)) {
+				return nextQuestion(game, id, null, true);
+			}
+		}
 		return null;
 	}
 }
