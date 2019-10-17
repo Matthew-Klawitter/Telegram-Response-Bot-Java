@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Random;
 
 public class Gacha {
-    private String name, special;
+    private String name, special, weightClass;
     private int health, mana, attack, defense, speed, rarity, level, xp;
     private int poisonChance, fireChance, iceChance, bleedChance, paralyzeChance, sleepChance, psychicChance, doomChance, curseChance, blessChance;
 
-    public Gacha(String name, String special, int health, int mana, int attack, int defense, int speed, int rarity, int level, int xp, int poisonChance, int fireChance, int iceChance, int bleedChance, int paralyzeChance, int sleepChance, int psychicChance, int doomChance, int curseChance, int blessChance) {
+    public Gacha(String name, String weightClass, String special, int health, int mana, int attack, int defense, int speed, int rarity, int level, int xp, int poisonChance, int fireChance, int iceChance, int bleedChance, int paralyzeChance, int sleepChance, int psychicChance, int doomChance, int curseChance, int blessChance) {
         this.name = name;
         this.special = special;
+        this.weightClass = weightClass;
         this.health = health;
         this.mana = mana;
         this.attack = attack;
@@ -38,62 +39,32 @@ public class Gacha {
     public Gacha(String name, String special, int rarity){
         this.name = name;
         this.special = special;
+        weightClass = "Rookie";
         this.rarity = rarity;
         level = 0;
         xp = 0;
-        generateStats(rarity);
+        generateStats();
         generatePowers(rarity);
     }
 
     public Gacha(int rarity){
+        weightClass = "Rookie";
         this.rarity = rarity;
         level = 0;
         xp = 0;
-        generateStats(rarity);
+        generateStats();
         generatePowers(rarity);
         generateLore(rarity);
     }
 
-    private void generateStats(int rarity){
+    private void generateStats(){
         Random r = new Random();
 
-        switch(rarity){
-            case 0:
-                health = r.nextInt(20) + 20;
-                mana = r.nextInt(5) + 5;
-                attack = r.nextInt(5) + 5;
-                defense = r.nextInt(5) + 5;
-                speed = r.nextInt(5) + 5;
-                break;
-            case 1:
-                health = r.nextInt(25) + 35;
-                mana = r.nextInt(10) + 10;
-                attack = r.nextInt(10) + 10;
-                defense = r.nextInt(10) + 10;
-                speed = r.nextInt(10) + 10;
-                break;
-            case 2:
-                health = r.nextInt(40) + 45;
-                mana = r.nextInt(20) + 15;
-                attack = r.nextInt(20) + 15;
-                defense = r.nextInt(20) + 15;
-                speed = r.nextInt(20) + 15;
-                break;
-            case 3:
-                health = r.nextInt(70) + 80;
-                mana = r.nextInt(30) + 25;
-                attack = r.nextInt(30) + 25;
-                defense = r.nextInt(30) + 25;
-                speed = r.nextInt(30) + 25;
-                break;
-            case 4:
-                health = r.nextInt(50) + 100;
-                mana = r.nextInt(40) + 30;
-                attack = r.nextInt(40) + 30;
-                defense = r.nextInt(40) + 30;
-                speed = r.nextInt(40) + 30;
-                break;
-        }
+        health = r.nextInt(30) + 25;
+        mana = r.nextInt(5) + 5;
+        attack = r.nextInt(5) + 5;
+        defense = r.nextInt(5) + 5;
+        speed = r.nextInt(5) + 5;
     }
 
     private void generatePowers(int rarity){
@@ -296,120 +267,120 @@ public class Gacha {
         }
 
         name = nameBuilder.toString();
-        StringBuilder sb = new StringBuilder("Specialized, ");
+        StringBuilder weaponPrefix = new StringBuilder();
 
         if (poisonChance > 50)
-            sb.append("Death Dripping, ");
+            weaponPrefix.append("Death Dripping, ");
         else if (poisonChance > 25)
-            sb.append("Toxic, ");
+            weaponPrefix.append("Toxic, ");
         else if (poisonChance > 10)
-            sb.append("Deadly Venom, ");
+            weaponPrefix.append("Deadly Venom, ");
         else if (poisonChance > 5)
-            sb.append("Venomous, ");
+            weaponPrefix.append("Venomous, ");
         else if (poisonChance > 0)
-            sb.append("Poisonous, ");
+            weaponPrefix.append("Poisonous, ");
 
         if (fireChance > 50)
-            sb.append("Inferno, ");
+            weaponPrefix.append("Inferno, ");
         else if (fireChance > 25)
-            sb.append("Molten, ");
+            weaponPrefix.append("Molten, ");
         else if (fireChance > 10)
-            sb.append("Roasting, ");
+            weaponPrefix.append("Roasting, ");
         else if (fireChance > 5)
-            sb.append("Flaming, ");
+            weaponPrefix.append("Flaming, ");
         else if (fireChance > 0)
-            sb.append("Flame, ");
+            weaponPrefix.append("Flame, ");
 
         if (iceChance > 50)
-            sb.append("Absolute Zero, ");
+            weaponPrefix.append("Absolute Zero, ");
         else if (iceChance > 25)
-            sb.append("Frost Biting, ");
+            weaponPrefix.append("Frost Biting, ");
         else if (iceChance > 10)
-            sb.append("Freezing, ");
+            weaponPrefix.append("Freezing, ");
         else if (iceChance > 5)
-            sb.append("Frozen, ");
+            weaponPrefix.append("Frozen, ");
         else if (iceChance > 0)
-            sb.append("Water Flowing, ");
+            weaponPrefix.append("Water Flowing, ");
 
         if (bleedChance > 50)
-            sb.append("Flesh's Bane, ");
+            weaponPrefix.append("Flesh's Bane, ");
         else if (bleedChance > 25)
-            sb.append("Organ Bursting, ");
+            weaponPrefix.append("Organ Bursting, ");
         else if (bleedChance > 10)
-            sb.append("Traumatic, ");
+            weaponPrefix.append("Traumatic, ");
         else if (bleedChance > 5)
-            sb.append("Severe, ");
+            weaponPrefix.append("Severe, ");
         else if (bleedChance > 0)
-            sb.append("Bleeding, ");
+            weaponPrefix.append("Bleeding, ");
 
         if (paralyzeChance > 50)
-            sb.append("Zues' Own, ");
+            weaponPrefix.append("Zues' Own, ");
         else if (paralyzeChance > 25)
-            sb.append("Thor's Own, ");
+            weaponPrefix.append("Thor's Own, ");
         else if (paralyzeChance > 10)
-            sb.append("Shocking, ");
+            weaponPrefix.append("Shocking, ");
         else if (paralyzeChance > 5)
-            sb.append("Paralyzing, ");
+            weaponPrefix.append("Paralyzing, ");
         else if (paralyzeChance > 0)
-            sb.append("Electrifying, ");
+            weaponPrefix.append("Electrifying, ");
 
         if (sleepChance > 50)
-            sb.append("Nightmare Inducing, ");
+            weaponPrefix.append("Nightmare Inducing, ");
         else if (sleepChance > 25)
-            sb.append("Sleep Flowing, ");
+            weaponPrefix.append("Sleep Flowing, ");
         else if (sleepChance > 10)
-            sb.append("Deep Sleep, ");
+            weaponPrefix.append("Deep Sleep, ");
         else if (sleepChance > 5)
-            sb.append("Lazy, ");
+            weaponPrefix.append("Lazy, ");
         else if (sleepChance > 0)
-            sb.append("Half-hearted, ");
+            weaponPrefix.append("Half-hearted, ");
 
         if (psychicChance > 50)
-            sb.append("Exorcist, ");
+            weaponPrefix.append("Exorcist, ");
         else if (psychicChance > 25)
-            sb.append("Mind Reading, ");
+            weaponPrefix.append("Mind Reading, ");
         else if (psychicChance > 10)
-            sb.append("Third Eye, ");
+            weaponPrefix.append("Third Eye, ");
         else if (psychicChance > 5)
-            sb.append("Telepathic, ");
+            weaponPrefix.append("Telepathic, ");
         else if (psychicChance > 0)
-            sb.append("Psychic, ");
+            weaponPrefix.append("Psychic, ");
 
         if (doomChance > 50)
-            sb.append("World Ending, ");
+            weaponPrefix.append("World Ending, ");
         else if (doomChance > 25)
-            sb.append("End Bringing, ");
+            weaponPrefix.append("End Bringing, ");
         else if (doomChance > 10)
-            sb.append("Instant Killing, ");
+            weaponPrefix.append("Instant Killing, ");
         else if (doomChance > 5)
-            sb.append("Doom Brought, ");
+            weaponPrefix.append("Doom Brought, ");
         else if (doomChance > 0)
-            sb.append("Despair Bringing, ");
+            weaponPrefix.append("Despair Bringing, ");
 
         if (curseChance > 50)
-            sb.append("Damned, ");
+            weaponPrefix.append("Damned, ");
         else if (curseChance > 25)
-            sb.append("Death Bringing, ");
+            weaponPrefix.append("Death Bringing, ");
         else if (curseChance > 10)
-            sb.append("Conjured, ");
+            weaponPrefix.append("Conjured, ");
         else if (curseChance > 5)
-            sb.append("Blaspheme, ");
+            weaponPrefix.append("Blaspheme, ");
         else if (curseChance > 0)
-            sb.append("Cursed, ");
+            weaponPrefix.append("Cursed, ");
 
         if (blessChance > 50)
-            sb.append("Heavenly, ");
+            weaponPrefix.append("Heavenly, ");
         else if (blessChance > 25)
-            sb.append("Consecrate, ");
+            weaponPrefix.append("Consecrate, ");
         else if (blessChance > 10)
-            sb.append("Holy, ");
+            weaponPrefix.append("Holy, ");
         else if (blessChance > 5)
-            sb.append("Hallow, ");
+            weaponPrefix.append("Hallow, ");
         else if (blessChance > 0)
-            sb.append("Blessed, ");
+            weaponPrefix.append("Blessed, ");
 
-        sb.append(weaponName);
-        special = sb.toString();
+        weaponPrefix.append(weaponName);
+        special = weaponPrefix.toString();
     }
 
     public void grantXP(int xp){
@@ -435,6 +406,14 @@ public class Gacha {
 
     public String getSpecial() {
         return special;
+    }
+
+    public String getWeightClass() {
+        return weightClass;
+    }
+
+    public void setWeightClass(String weightClass) {
+        this.weightClass = weightClass;
     }
 
     public int getHealth() {
@@ -585,15 +564,15 @@ public class Gacha {
     public String toString(){
             return  "Name: " + name + "\n" +
                     "Special: " + special + "\n" +
-                    "Rarity: " + rarity + "\n" +
-                    "Level: " + level + " | " + "XP: " + xp + "\n" +
-                    "Health: " + health + " | " + "Mana: " + mana + "\n" +
-                    "Attack: " + attack + " | " + "Defense: " + defense + " | " + "Speed: " + speed + "\n" +
-                    "Poison %: " + poisonChance + " | " + "Fire %: " + fireChance + "\n" +
-                    "Ice %: " + iceChance + " | " + "Bleed %: " + bleedChance + "\n" +
-                    "Paralyze %: " + paralyzeChance + " | " + "Sleep %: " + sleepChance + "\n" +
-                    "Psychic %: " + psychicChance + " | " + "Doom %: " + doomChance + "\n" +
-                    "Curse %: " + curseChance + " | " + "Bless %: " + blessChance + "\n";
+                    "Rarity: " + rarity + "\t" + "Class: " + weightClass + "\n" +
+                    "Level: " + level + "\t" + "XP: " + xp + "\n" +
+                    "Health: " + health + "\t" + "Mana: " + mana + "\n" +
+                    "Attack: " + attack + "\t" + "Defense: " + defense + "\t" + "Speed: " + speed + "\n" +
+                    "Poison %: " + poisonChance + "\t" + "Fire %: " + fireChance + "\n" +
+                    "Ice %: " + iceChance + "\t" + "Bleed %: " + bleedChance + "\n" +
+                    "Paralyze %: " + paralyzeChance + "\t" + "Sleep %: " + sleepChance + "\n" +
+                    "Psychic %: " + psychicChance + "\t" + "Doom %: " + doomChance + "\n" +
+                    "Curse %: " + curseChance + "\t" + "Bless %: " + blessChance + "\n";
     }
 
     public static void main(String[] args){
