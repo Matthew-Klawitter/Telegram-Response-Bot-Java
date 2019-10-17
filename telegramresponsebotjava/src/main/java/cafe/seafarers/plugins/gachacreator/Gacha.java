@@ -259,39 +259,7 @@ public class Gacha {
             }
 
             if (nameList.size() > 0 || prefixList.size() > 0 || suffixList.size() > 0){
-                if (rarity == 4){
-                    String prefix = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
-                    String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix2 = prefix2.substring(0, 1).toUpperCase() + prefix2.substring(1);
-                    String prefix3 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix3 = prefix3.substring(0, 1).toUpperCase() + prefix3.substring(1);
-                    String prefix4 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix4 = prefix4.substring(0, 1).toUpperCase() + prefix4.substring(1);
-                    nameBuilder.append(prefix);
-                    nameBuilder.append(" ");
-                    nameBuilder.append(prefix2);
-                    nameBuilder.append(" ");
-                    nameBuilder.append(prefix3);
-                    nameBuilder.append(" ");
-                    nameBuilder.append(prefix4);
-                    nameBuilder.append(" ");
-                }
-                else if (rarity == 3){
-                    String prefix = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
-                    String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix2 = prefix2.substring(0, 1).toUpperCase() + prefix2.substring(1);
-                    String prefix3 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix3 = prefix3.substring(0, 1).toUpperCase() + prefix3.substring(1);
-                    nameBuilder.append(prefix);
-                    nameBuilder.append(" ");
-                    nameBuilder.append(prefix2);
-                    nameBuilder.append(" ");
-                    nameBuilder.append(prefix3);
-                    nameBuilder.append(" ");
-                }
-                else if (rarity == 2) {
+                if (rarity >= 2) {
                     String prefix = prefixList.get(r.nextInt(prefixList.size()));
                     prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
                     String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
@@ -615,28 +583,17 @@ public class Gacha {
 
     @Override
     public String toString(){
-
-        return "Fighter: \n" +
-                "Name: " + name + "\n" +
-                "Special: " + special + "\n" +
-                "Rarity: " + rarity + "\n" +
-                "Level: " + level + "\n" +
-                "XP: " + xp + "\n" +
-                "Health: " + health + "\n" +
-                "Mana: " + mana + "\n" +
-                "Attack: " + attack + "\n" +
-                "Defense: " + defense + "\n" +
-                "Speed: " + speed + "\n" +
-                "Poison %: " + poisonChance + "\n" +
-                "Fire %: " + fireChance + "\n" +
-                "Ice %: " + iceChance + "\n" +
-                "Bleed %: " + bleedChance + "\n" +
-                "Paralyze %: " + paralyzeChance + "\n" +
-                "Sleep %: " + sleepChance + "\n" +
-                "Psychic %: " + psychicChance + "\n" +
-                "Doom %: " + doomChance + "\n" +
-                "Curse %: " + curseChance + "\n" +
-                "Bless %: " + blessChance + "\n";
+            return  "Name: " + name + "\n" +
+                    "Special: " + special + "\n" +
+                    "Rarity: " + rarity + "\n" +
+                    "Level: " + level + " | " + "XP: " + xp + "\n" +
+                    "Health: " + health + " | " + "Mana: " + mana + "\n" +
+                    "Attack: " + attack + " | " + "Defense: " + defense + " | " + "Speed: " + speed + "\n" +
+                    "Poison %: " + poisonChance + " | " + "Fire %: " + fireChance + "\n" +
+                    "Ice %: " + iceChance + " | " + "Bleed %: " + bleedChance + "\n" +
+                    "Paralyze %: " + paralyzeChance + " | " + "Sleep %: " + sleepChance + "\n" +
+                    "Psychic %: " + psychicChance + " | " + "Doom %: " + doomChance + "\n" +
+                    "Curse %: " + curseChance + " | " + "Bless %: " + blessChance + "\n";
     }
 
     public static void main(String[] args){
