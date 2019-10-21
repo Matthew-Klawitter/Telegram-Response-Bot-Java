@@ -1,9 +1,11 @@
 package cafe.seafarers.plugins.gachacreator;
 
 import cafe.seafarers.config.Resources;
+import cafe.seafarers.currencies.BankManager;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -100,19 +102,19 @@ public class Gacha {
                 break;
             case 1:
                 if (stats[0] == 1)
-                    poisonChance = r.nextInt(5) + 1;
+                    poisonChance = r.nextInt(5) + 2;
                 if (stats[1] == 1)
-                    fireChance = r.nextInt(5) + 1;
+                    fireChance = r.nextInt(5) + 2;
                 if (stats[2] == 1)
-                    iceChance = r.nextInt(5) + 1;
+                    iceChance = r.nextInt(5) + 2;
                 if (stats[3] == 1)
-                    bleedChance = r.nextInt(5) + 1;
+                    bleedChance = r.nextInt(5) + 2;
                 if (stats[4] == 1)
-                    paralyzeChance = r.nextInt(5) + 1;
+                    paralyzeChance = r.nextInt(5) + 2;
                 if (stats[5] == 1)
-                    sleepChance = r.nextInt(5) + 1;
+                    sleepChance = r.nextInt(5) + 2;
                 if (stats[6] == 1)
-                    psychicChance = r.nextInt(5) + 1;
+                    psychicChance = r.nextInt(5) + 2;
                 if (stats[7] == 1)
                     doomChance = r.nextInt(2) + 1;
                 if (stats[8] == 1)
@@ -122,19 +124,19 @@ public class Gacha {
                 break;
             case 2:
                 if (stats[0] == 1)
-                    poisonChance = r.nextInt(8) + 2;
+                    poisonChance = r.nextInt(8) + 4;
                 if (stats[1] == 1)
-                    fireChance = r.nextInt(8) + 2;
+                    fireChance = r.nextInt(8) + 4;
                 if (stats[2] == 1)
-                    iceChance = r.nextInt(8) + 2;
+                    iceChance = r.nextInt(8) + 4;
                 if (stats[3] == 1)
-                    bleedChance = r.nextInt(8) + 2;
+                    bleedChance = r.nextInt(8) + 4;
                 if (stats[4] == 1)
-                    paralyzeChance = r.nextInt(8) + 2;
+                    paralyzeChance = r.nextInt(8) + 4;
                 if (stats[5] == 1)
-                    sleepChance = r.nextInt(8) + 2;
+                    sleepChance = r.nextInt(8) + 4;
                 if (stats[6] == 1)
-                    psychicChance = r.nextInt(8) + 2;
+                    psychicChance = r.nextInt(10) + 4;
                 if (stats[7] == 1)
                     doomChance = r.nextInt(5) + 1;
                 if (stats[8] == 1)
@@ -144,19 +146,19 @@ public class Gacha {
                 break;
             case 3:
                 if (stats[0] == 1)
-                    poisonChance = r.nextInt(15) + 5;
+                    poisonChance = r.nextInt(12) + 5;
                 if (stats[1] == 1)
-                    fireChance = r.nextInt(15) + 5;
+                    fireChance = r.nextInt(12) + 5;
                 if (stats[2] == 1)
-                    iceChance = r.nextInt(15) + 5;
+                    iceChance = r.nextInt(12) + 5;
                 if (stats[3] == 1)
-                    bleedChance = r.nextInt(15) + 5;
+                    bleedChance = r.nextInt(12) + 5;
                 if (stats[4] == 1)
-                    paralyzeChance = r.nextInt(15) + 5;
+                    paralyzeChance = r.nextInt(12) + 5;
                 if (stats[5] == 1)
-                    sleepChance = r.nextInt(15) + 5;
+                    sleepChance = r.nextInt(12) + 5;
                 if (stats[6] == 1)
-                    psychicChance = r.nextInt(15) + 5;
+                    psychicChance = r.nextInt(12) + 5;
                 if (stats[7] == 1)
                     doomChance = r.nextInt(8) + 3;
                 if (stats[8] == 1)
@@ -166,19 +168,19 @@ public class Gacha {
                 break;
             case 4:
                 if (stats[0] == 1)
-                    poisonChance = r.nextInt(20) + 10;
+                    poisonChance = r.nextInt(17) + 10;
                 if (stats[1] == 1)
-                    fireChance = r.nextInt(20) + 10;
+                    fireChance = r.nextInt(17) + 10;
                 if (stats[2] == 1)
-                    iceChance = r.nextInt(20) + 10;
+                    iceChance = r.nextInt(17) + 10;
                 if (stats[3] == 1)
-                    bleedChance = r.nextInt(20) + 10;
+                    bleedChance = r.nextInt(17) + 10;
                 if (stats[4] == 1)
-                    paralyzeChance = r.nextInt(20) + 10;
+                    paralyzeChance = r.nextInt(17) + 10;
                 if (stats[5] == 1)
-                    sleepChance = r.nextInt(20) + 10;
+                    sleepChance = r.nextInt(17) + 10;
                 if (stats[6] == 1)
-                    psychicChance = r.nextInt(20) + 10;
+                    psychicChance = r.nextInt(17) + 10;
                 if (stats[7] == 1)
                     doomChance = r.nextInt(13) + 6;
                 if (stats[8] == 1)
@@ -200,10 +202,14 @@ public class Gacha {
             List<String> prefixList = new ArrayList<String>();
             List<String> suffixList = new ArrayList<String>();
             List<String> weaponList = new ArrayList<String>();
+
+            // Data files
             File nameData = Resources.LoadFile("gacha", "names.txt");
             File prefixData = Resources.LoadFile("gacha", "prefixes.txt");
             File suffixData = Resources.LoadFile("gacha", "suffixes.txt");
             File weaponData = Resources.LoadFile("gacha", "weapons.txt");
+
+            // Data readers
             assert nameData != null;
             BufferedReader nameReader = new BufferedReader(new FileReader(nameData));
             assert prefixData != null;
@@ -213,6 +219,7 @@ public class Gacha {
             assert weaponData != null;
             BufferedReader weaponReader = new BufferedReader(new FileReader(weaponData));
 
+            // Load data
             while ((line = nameReader.readLine()) != null){
                 nameList.add(line);
             }
@@ -229,29 +236,82 @@ public class Gacha {
                 weaponList.add(line);
             }
 
+            // Create the lore
             if (nameList.size() > 0 || prefixList.size() > 0 || suffixList.size() > 0){
-                if (rarity >= 2) {
-                    String prefix = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
+                if (rarity == 4){
+                    // Generate Adjectives
+                    String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
                     String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
                     prefix2 = prefix2.substring(0, 1).toUpperCase() + prefix2.substring(1);
-                    nameBuilder.append(prefix);
-                    nameBuilder.append(" ");
+                    nameBuilder.append(prefix1);
+                    nameBuilder.append(", ");
                     nameBuilder.append(prefix2);
                     nameBuilder.append(" ");
 
+                    // Generate Name
+                    nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
+                    nameBuilder.append(" ");
+
+                    // Generate Epithet
+                    nameBuilder.append(suffixList.get(r.nextInt(suffixList.size())));
+                    nameBuilder.append(", and ");
+                    nameBuilder.append(suffixList.get(r.nextInt(suffixList.size())));
+                }
+                else if (rarity == 3){
+                    // Generate Adjectives
+                    String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
+                    String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix2 = prefix2.substring(0, 1).toUpperCase() + prefix2.substring(1);
+                    nameBuilder.append(prefix1);
+                    nameBuilder.append(", ");
+                    nameBuilder.append(prefix2);
+                    nameBuilder.append(" ");
+
+                    // Generate Name
+                    nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
+                    nameBuilder.append(" ");
+
+                    // Generate Epithet
+                    nameBuilder.append(suffixList.get(r.nextInt(suffixList.size())));
+                }
+                else if (rarity == 2){
+                    // Generate Adjectives
+                    String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
+                    nameBuilder.append(prefix1);
+                    nameBuilder.append(" ");
+
+                    // Generate Name
+                    nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
+                    nameBuilder.append(" ");
+
+                    // Generate Epithet
+                    nameBuilder.append(suffixList.get(r.nextInt(suffixList.size())));
+                }
+                else if (rarity == 1){
+                    // Generate Adjectives
+                    String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
+                    nameBuilder.append(prefix1);
+                    nameBuilder.append(" ");
+
+                    // Generate Name
+                    nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
                 }
                 else {
-                    String prefix = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
-                    nameBuilder.append(prefix);
+                    // Generate Adjectives
+                    String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
+                    prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
+                    nameBuilder.append(prefix1);
                     nameBuilder.append(" ");
+
+                    // Generate Name
+                    nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
                 }
 
-                nameBuilder.append(nameList.get(r.nextInt(nameList.size())));
-                nameBuilder.append(" ");
-                nameBuilder.append(suffixList.get(r.nextInt(suffixList.size())));
-
+                // Generate Weapon
                 weaponName = weaponList.get(r.nextInt(weaponList.size()));
                 weaponName += " " + suffixList.get(r.nextInt(suffixList.size()));
             }
@@ -383,13 +443,40 @@ public class Gacha {
         special = weaponPrefix.toString();
     }
 
-    public void grantXP(int xp){
-        //TODO: Implement
+    public boolean grantXP(int xp){
+        this.xp += xp;
+        return levelUp();
     }
 
     public boolean levelUp(){
-        //TODO: Implement
-        return false;
+        if (level >= 100){
+            return false;
+        }
+
+        boolean leveledUp = (xp >= 100);
+        Random r = new Random();
+
+        while (xp >= 100){
+            this.health += r.nextInt(5) + 2;
+            this.mana += r.nextInt(3) + 1;
+            this.attack += r.nextInt(3) + 1;
+            this.defense += r.nextInt(3) + 1;
+            this.speed += r.nextInt(3) + 1;
+            this.level += 1;
+            this.xp -= 100;
+            this.poisonChance += r.nextInt(3);
+            this.fireChance += r.nextInt(3);
+            this.iceChance += r.nextInt(3);
+            this.bleedChance += r.nextInt(3);
+            this.paralyzeChance += r.nextInt(3);
+            this.sleepChance += r.nextInt(3);
+            this.psychicChance += r.nextInt(3);
+            this.doomChance += r.nextInt(2);
+            this.curseChance += r.nextInt(2);
+            this.blessChance += r.nextInt(2);
+        }
+
+        return leveledUp;
     }
 
     public String getName() {
@@ -564,15 +651,13 @@ public class Gacha {
     public String toString(){
             return  "Name: " + name + "\n" +
                     "Special: " + special + "\n" +
-                    "Rarity: " + rarity + "\t" + "Class: " + weightClass + "\n" +
-                    "Level: " + level + "\t" + "XP: " + xp + "\n" +
-                    "Health: " + health + "\t" + "Mana: " + mana + "\n" +
-                    "Attack: " + attack + "\t" + "Defense: " + defense + "\t" + "Speed: " + speed + "\n" +
-                    "Poison %: " + poisonChance + "\t" + "Fire %: " + fireChance + "\n" +
-                    "Ice %: " + iceChance + "\t" + "Bleed %: " + bleedChance + "\n" +
-                    "Paralyze %: " + paralyzeChance + "\t" + "Sleep %: " + sleepChance + "\n" +
-                    "Psychic %: " + psychicChance + "\t" + "Doom %: " + doomChance + "\n" +
-                    "Curse %: " + curseChance + "\t" + "Bless %: " + blessChance + "\n";
+                    "Rarity: " + rarity + " | " + "Class: " + weightClass + "\n" +
+                    "Level: " + level + " | " + "XP: " + xp + "\n" +
+                    "Health: " + health + " | " + "Mana: " + mana + "\n" +
+                    "Attack: " + attack + " | " + "Defense: " + defense + " | " + "Speed: " + speed + "\n" +
+                    "Poison %: " + poisonChance + " | " + "Fire %: " + fireChance + " | " + "Ice %: " + iceChance + " | " + "Bleed %: " + bleedChance + "\n" +
+                    "Paralyze %: " + paralyzeChance + " | " + "Sleep %: " + sleepChance + " | " + "Psychic %: " + psychicChance + "\n" +
+                    "Doom %: " + doomChance + " | " + "Curse %: " + curseChance + " | " + "Bless %: " + blessChance + "\n";
     }
 
     public static void main(String[] args){
@@ -590,5 +675,19 @@ public class Gacha {
 
         Gacha g4 = new Gacha(4);
         System.out.println(g4.toString());
+
+        g4.grantXP(1000);
+        System.out.println(g4.toString());
+
+        String user = "TestUser12363";
+        BankManager.createAccount(user);
+        BankManager.deposit(user, 100000);
+
+        GachaManager m = new GachaManager();
+        System.out.println(m.summonGacha(user));
+        System.out.println(m.listOwned(user));
+        System.out.println(m.inspectGacha(user, 0));
+        System.out.println(m.addGacha(user, g4));
+        System.out.println(m.listOwned(user));
     }
 }

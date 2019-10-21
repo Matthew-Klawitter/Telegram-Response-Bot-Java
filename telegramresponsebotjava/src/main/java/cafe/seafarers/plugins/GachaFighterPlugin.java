@@ -1,12 +1,14 @@
 package cafe.seafarers.plugins;
 
 import cafe.seafarers.plugins.gachacreator.Gacha;
+import cafe.seafarers.plugins.gachacreator.GachaManager;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public class GachaFighterPlugin implements BotPlugin {
-    private final String[] COMMANDS = {"gsummon"};
+    private final String[] COMMANDS = {"gsummon", "glist", "gview"};
+    private GachaManager gm;
 
     @Override
     public BaseRequest onCommand(Update update) {
@@ -14,20 +16,22 @@ public class GachaFighterPlugin implements BotPlugin {
         String message = update.message().text().substring(1);
         String command = message.split("[ @]")[0].toLowerCase();
         String args = message.substring(command.length()).trim();
+        String user = update.message().from().username();
 
-        try {
-            int rarity = Integer.parseInt(args);
-            if (rarity >= 5 || rarity < 0){
-                return new SendMessage(channelID, "GF: Invalid rarity, must be between 0 and 4! Use /gsummon [0-4] to summon a testing gacha (will not be saved)");
-            }
-
-            Gacha g = new Gacha(Integer.parseInt(args));
-            return new SendMessage(channelID, "GF: You summoned...\n" + g.toString());
-        } catch(NumberFormatException e) {
-            e.printStackTrace();
+        switch (command){
+            case ("gsummon"):
+                return new SendMessage(channelID, gm.summonGacha(user));
+            case ("glist"):
+                return new SendMessage(channelID, gm.listOwned(user));
+            case ("gview"):
+                try {
+                    return new SendMessage(channelID, gm.inspectGacha(user, Integer.parseInt(args)));
+                } catch (NumberFormatException e){
+                    e.printStackTrace();
+                    return new SendMessage(channelID, "GF: The specified argument must be an integer!");
+                }
         }
-
-        return new SendMessage(channelID, "GF: Invalid use! Use /gsummon [0-4] to summon a testing gacha (will not be saved)");
+        return new SendMessage(channelID, "GF: Invalid specified command. Try /help GachaFighters");
     }
 
     @Override
@@ -37,7 +41,7 @@ public class GachaFighterPlugin implements BotPlugin {
 
     @Override
     public String getName() {
-        return "Gacha Fighters";
+        return "GachaFighters";
     }
 
     @Override
@@ -47,17 +51,18 @@ public class GachaFighterPlugin implements BotPlugin {
 
     @Override
     public String getVersion() {
-        return "V0.1";
+        return "V0.6";
     }
 
     @Override
     public String getHelp() {
-        return "GF: Use /gsummon to summon a testing gacha (will not be saved)";
+        return "GF: Available Commands:\n '/gsummon' to summon a gacha for 100 credits\n'/glist' to view owned gacha\n'/gview [id]' to view stats of a gacha";
     }
 
     @Override
     public boolean enable() {
-        return false;
+        gm = new GachaManager();
+        return true;
     }
 
     @Override
