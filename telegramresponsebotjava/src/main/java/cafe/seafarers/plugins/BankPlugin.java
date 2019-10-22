@@ -12,7 +12,6 @@ public class BankPlugin implements BotPlugin {
     public BaseRequest onCommand(Update update) {
         String message = update.message().text().substring(1).toLowerCase();
         String command = message.split("[ @]")[0];
-        String[] args = message.substring(command.length() + 1).split(" ");
         String user = update.message().from().username();
 
         switch(command){
@@ -22,9 +21,12 @@ public class BankPlugin implements BotPlugin {
                 }
                 return new SendMessage(update.message().chat().id(), "Bank: You already have an account.");
             case "btransfer":
+                String[] args = message.substring(command.length() + 1).split(" ");
+
                 if (args.length == 2){
                     try {
                         String toUser = args[0];
+                        toUser = toUser.substring(0,1).toUpperCase() + toUser.substring(1);
                         int amount = Integer.parseInt(args[1]);
 
                         if (BankManager.transferFunds(user, toUser, amount))

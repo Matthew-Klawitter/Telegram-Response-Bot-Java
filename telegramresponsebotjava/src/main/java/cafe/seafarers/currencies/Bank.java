@@ -112,11 +112,13 @@ public class Bank {
      * @return true if the transfer is successful
      */
     public boolean transferFunds(String fromUser, String toUser, int amount){
-        if (amount > 0){
-            if (charge(fromUser, amount)){
-                return deposit(toUser, amount);
+        if (accountExists(toUser)){
+            if (amount > 0){
+                if (charge(fromUser, amount)){
+                    return deposit(toUser, amount);
+                }
+                return false;
             }
-            return false;
         }
         return false;
     }
