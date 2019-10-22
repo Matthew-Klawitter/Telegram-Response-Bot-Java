@@ -12,7 +12,7 @@ public class BankPlugin implements BotPlugin {
     public BaseRequest onCommand(Update update) {
         String message = update.message().text().substring(1).toLowerCase();
         String command = message.split("[ @]")[0];
-        String[] args = message.substring(command.length()).split(" ");
+        String[] args = message.substring(command.length() + 1).split(" ");
         String user = update.message().from().username();
 
         switch(command){
