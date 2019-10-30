@@ -10,7 +10,7 @@ public class BankPlugin implements BotPlugin {
 
     @Override
     public BaseRequest onCommand(Update update) {
-        String message = update.message().text().substring(1).toLowerCase();
+        String message = update.message().text().substring(1);
         String command = message.split("[ @]")[0];
         String user = update.message().from().username();
 

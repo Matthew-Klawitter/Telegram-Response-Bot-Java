@@ -109,6 +109,39 @@ public class GachaManager {
     }
 
     /**
+     * Gives a gacha owned by fromUser to toUser
+     * @param fromUser
+     * @param toUser
+     * @param id
+     * @return true if the gacha is successfully added to toUser's list and removed from fromUser's list
+     */
+    public boolean tradeGacha(String fromUser, String toUser, int id){
+        if (!gachaBank.containsKey(toUser)){
+            return false;
+        }
+
+        if (!gachaBank.containsKey(fromUser)){
+            gachaBank.put(fromUser, new ArrayList<Gacha>());
+            return false;
+        }
+
+        List<Gacha> fromList = gachaBank.get(fromUser);
+        List<Gacha> toList = gachaBank.get(toUser);
+
+        if (id < fromList.size() && id >= 0){
+            Gacha g = fromList.get(id);
+            fromList.remove(id);
+            addGacha(toUser, g);
+            sortList(fromList);
+            sortList(toList);
+            save();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns a list of all gacha's a user owns and their position in a list
      * @param username
      * @return String ordering all owned Gacha
@@ -142,7 +175,7 @@ public class GachaManager {
 
         List<Gacha> list = gachaBank.get(username);
 
-        if (number < list.size()){
+        if (number < list.size() && number >= 0){
             return list.get(number).toString();
         }
         return "GF: Sorry, the gacha at that position does not exist.";

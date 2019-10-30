@@ -11,6 +11,7 @@ import java.util.Random;
 
 public class Gacha {
     private String name, special, weightClass;
+    private int wins, matches;
     private int health, mana, attack, defense, speed, rarity, level, xp;
     private int poisonChance, fireChance, iceChance, bleedChance, paralyzeChance, sleepChance, psychicChance, doomChance, curseChance, blessChance;
 
@@ -18,6 +19,8 @@ public class Gacha {
         this.name = name;
         this.special = special;
         this.weightClass = weightClass;
+        this.wins = 0;
+        this.matches = 0;
         this.health = health;
         this.mana = mana;
         this.attack = attack;
@@ -42,6 +45,8 @@ public class Gacha {
         this.name = name;
         this.special = special;
         weightClass = "Rookie";
+        this.wins = 0;
+        this.matches = 0;
         this.rarity = rarity;
         level = 0;
         xp = 0;
@@ -50,6 +55,8 @@ public class Gacha {
     }
 
     public Gacha(int rarity){
+        this.wins = 0;
+        this.matches = 0;
         weightClass = "Rookie";
         this.rarity = rarity;
         level = 0;
@@ -262,11 +269,7 @@ public class Gacha {
                     // Generate Adjectives
                     String prefix1 = prefixList.get(r.nextInt(prefixList.size()));
                     prefix1 = prefix1.substring(0, 1).toUpperCase() + prefix1.substring(1);
-                    String prefix2 = prefixList.get(r.nextInt(prefixList.size()));
-                    prefix2 = prefix2.substring(0, 1).toUpperCase() + prefix2.substring(1);
                     nameBuilder.append(prefix1);
-                    nameBuilder.append(", ");
-                    nameBuilder.append(prefix2);
                     nameBuilder.append(" ");
 
                     // Generate Name
@@ -474,9 +477,28 @@ public class Gacha {
             this.doomChance += r.nextInt(2);
             this.curseChance += r.nextInt(2);
             this.blessChance += r.nextInt(2);
+            checkPromotion();
         }
 
         return leveledUp;
+    }
+
+    public void checkPromotion(){
+        if (level >= 99){
+            weightClass = "Grand Champion";
+        }
+        else if (level >= 75){
+            weightClass = "Champion";
+        }
+        else if (level >= 50){
+            weightClass = "Pro";
+        }
+        else if (level >= 25){
+            weightClass = "SemiPro";
+        }
+        else {
+            weightClass = "Rookie";
+        }
     }
 
     public String getName() {
@@ -647,12 +669,29 @@ public class Gacha {
         this.blessChance = blessChance;
     }
 
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getMatches() {
+        return matches;
+    }
+
+    public void setMatches(int matches) {
+        this.matches = matches;
+    }
+
     @Override
     public String toString(){
             return  "Name: " + name + "\n" +
                     "Special: " + special + "\n" +
                     "Rarity: " + rarity + " | " + "Class: " + weightClass + "\n" +
                     "Level: " + level + " | " + "XP: " + xp + "\n" +
+                    "Matches: " + matches + " | " + "Wins: " + wins + "\n" +
                     "Health: " + health + " | " + "Mana: " + mana + "\n" +
                     "Attack: " + attack + " | " + "Defense: " + defense + " | " + "Speed: " + speed + "\n" +
                     "Poison %: " + poisonChance + " | " + "Fire %: " + fireChance + " | " + "Ice %: " + iceChance + " | " + "Bleed %: " + bleedChance + "\n" +
