@@ -50,7 +50,7 @@ public class BankPlugin implements BotPlugin {
 
     @Override
     public String getName() {
-        return "Bank: Currency + Point Manager";
+        return "Bank";
     }
 
     @Override
