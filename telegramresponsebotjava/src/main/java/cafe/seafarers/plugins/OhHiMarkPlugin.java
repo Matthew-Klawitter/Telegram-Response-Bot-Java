@@ -28,7 +28,7 @@ public class OhHiMarkPlugin implements BotPlugin {
         File audio = Resources.LoadFile(this, FILE);
 
         try {
-            if (user.equals("Steve_Clarney") || firstName.equals("Matthew")){
+            if (user.equals("Steve_Clarney") || firstName.equals("Mark")){
                 Calendar today = Calendar.getInstance();
                 DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
                 Date date = new Date();
