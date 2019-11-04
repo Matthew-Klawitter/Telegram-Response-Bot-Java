@@ -231,11 +231,13 @@ public class TriviaPlugin implements BotPlugin {
 	public BaseRequest onMessage(Update update) {
 		long id = update.message().chat().id();
 		TriviaGame game = currentGames.get(id);
-		currentGuesses.put(id, currentGuesses.get(id) + 1);
-		if (game != null && game.checkAnswer(update.message().text())) {
-			return nextQuestion(game, update.message().chat().id(), update.message().from(), false);
-		} else if (currentGuesses.get(id) > 10) {
-			return nextQuestion(game, update.message().chat().id(), update.message().from(), true);
+		if (game != null){
+			currentGuesses.put(id, currentGuesses.get(id) + 1);
+			if (game.checkAnswer(update.message().text())) {
+				return nextQuestion(game, update.message().chat().id(), update.message().from(), false);
+			} else if (currentGuesses.get(id) > 10) {
+				return nextQuestion(game, update.message().chat().id(), update.message().from(), true);
+			}
 		}
 		return null;
 	}
