@@ -1,18 +1,16 @@
 package cafe.seafarers.plugins;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.Gson;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -20,7 +18,9 @@ import com.pengrad.telegrambot.request.SendMessage;
 import cafe.seafarers.config.Resources;
 
 public class ForecastPlugin implements BotPlugin {
-	private static final String[] COMMANDS = { "forecast" };
+	private static final String[] COMMANDS = { "weather" };
+	private static final String[] DESCRIPTIONS = { "<city,country> sends the weather at a place" };
+
 	private static String apiKey;
 
 	@Override
@@ -156,8 +156,12 @@ public class ForecastPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

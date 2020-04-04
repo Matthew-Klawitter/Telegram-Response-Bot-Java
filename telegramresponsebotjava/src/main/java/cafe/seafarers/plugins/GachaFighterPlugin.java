@@ -1,13 +1,16 @@
 package cafe.seafarers.plugins;
 
-import cafe.seafarers.plugins.gachacreator.Gacha;
-import cafe.seafarers.plugins.gachacreator.GachaManager;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import cafe.seafarers.plugins.gachacreator.GachaManager;
+
 public class GachaFighterPlugin implements BotPlugin {
 	private final String[] COMMANDS = { "gsummon", "glist", "gview", "gtrade" };
+	private final String[] DESCRIPTIONS = { "summons a gacha for 100 credits", "views owned gacha",
+			"<id> to view stats of a gacha", "<to> <id> sends a gacha" };
 	private GachaManager gm;
 
 	@Override
@@ -53,8 +56,12 @@ public class GachaFighterPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

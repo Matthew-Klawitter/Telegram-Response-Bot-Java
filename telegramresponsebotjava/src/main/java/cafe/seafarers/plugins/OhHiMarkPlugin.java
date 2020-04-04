@@ -1,15 +1,17 @@
 package cafe.seafarers.plugins;
 
-import cafe.seafarers.config.Resources;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendAudio;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import com.pengrad.telegrambot.model.BotCommand;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.SendAudio;
+
+import cafe.seafarers.config.Resources;
 
 public class OhHiMarkPlugin implements BotPlugin {
 	private final String FILE = "ohhimark.mp3";
@@ -49,8 +51,8 @@ public class OhHiMarkPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return new String[0];
+	public BotCommand[] getCommands() {
+		return new BotCommand[0];
 	}
 
 	@Override

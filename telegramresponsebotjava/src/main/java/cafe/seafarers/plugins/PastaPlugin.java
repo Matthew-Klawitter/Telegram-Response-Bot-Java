@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public class PastaPlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "pasta", "pastalist", "pastanew" };
+	private static final String[] DESCRIPTIONS = { "[name] gets an (optionally named) pasta", "lists current pasta",
+			"creates a new pasta" };
 	private HashMap<String, String> pasta;
 	private Random random;
 
@@ -56,8 +59,12 @@ public class PastaPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

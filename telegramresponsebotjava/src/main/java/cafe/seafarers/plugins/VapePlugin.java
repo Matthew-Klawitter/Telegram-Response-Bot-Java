@@ -1,13 +1,12 @@
 package cafe.seafarers.plugins;
 
+import java.util.HashMap;
+import java.util.Random;
+
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.MessagesResponse;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Random;
 
 public class VapePlugin implements BotPlugin {
 	private HashMap<String, Integer> penFuel;
@@ -107,9 +106,16 @@ public class VapePlugin implements BotPlugin {
 		return new SendMessage(channelID, user + " tries to take a swig of vape but chokes on it! How lame.");
 	}
 
+	final static String[] COMMANDS = { "vape", "vrefill" };
+	final static String[] DESCRIPTIONS = { "vapes", "refills" };
+
 	@Override
-	public String[] getCommands() {
-		return new String[] { "vape", "vrefill" };
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

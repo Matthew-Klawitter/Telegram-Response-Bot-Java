@@ -1,5 +1,6 @@
 package cafe.seafarers.plugins;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 
@@ -25,7 +26,7 @@ public interface BotPlugin {
 	 * 
 	 * @return Array String
 	 */
-	public String[] getCommands();
+	public BotCommand[] getCommands();
 
 	/**
 	 * @return true if this plugin should receive all messages

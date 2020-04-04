@@ -1,5 +1,6 @@
 package cafe.seafarers.plugins;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -8,6 +9,8 @@ import cafe.seafarers.currencies.BankManager;
 
 public class BankPlugin implements BotPlugin {
 	private final String[] COMMANDS = { "bcreate", "btransfer", "bview" };
+	private final String[] DESCRIPTIONS = { "creates an account", "<to> <amount> sends points",
+			"views available funds" };
 
 	@Override
 	public BaseRequest onCommand(Update update) {
@@ -47,8 +50,12 @@ public class BankPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

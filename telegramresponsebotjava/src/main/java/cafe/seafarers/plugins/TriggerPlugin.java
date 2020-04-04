@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public class TriggerPlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "triggerlist", "triggernew" };
+	private static final String[] DESCRIPTIONS = { "lists triggers", "creates a new trigger" };
 	private HashMap<String, ArrayList<String>> triggers;
 	private Random random;
 
@@ -55,8 +57,12 @@ public class TriggerPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

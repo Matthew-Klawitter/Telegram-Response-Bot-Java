@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -17,6 +18,8 @@ import cafe.seafarers.config.Resources;
 
 public class MumblePlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "mstatus", "menable", "mdisable" };
+	private static final String[] DESCRIPTIONS = { "gets mumble status", "enables mumble alerts",
+			"disable mumble alerts" };
 	private String dnsName;
 	private Set<Long> enabledChannels;
 	private int users;
@@ -106,8 +109,12 @@ public class MumblePlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

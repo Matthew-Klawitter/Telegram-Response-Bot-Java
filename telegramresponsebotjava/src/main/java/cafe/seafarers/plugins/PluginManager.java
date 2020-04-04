@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,8 @@ public class PluginManager {
 	// TODO unused currently
 	// Message Ids and their plugins that send them
 	private MapStack<Long, BotPlugin> messages;
+	// Used to set commands with botfather
+	private Set<BotCommand> botCommands;
 
 	public PluginManager(String pluginPath) {
 		this.plugins = new HashMap<BotPlugin, Boolean>();
@@ -41,6 +44,7 @@ public class PluginManager {
 		this.messagePlugins = new HashSet<BotPlugin>();
 		// importer = new PluginImporter(pluginPath);
 		this.pluginDirPath = pluginPath;
+		this.botCommands = new HashSet<BotCommand>();
 	}
 
 	/**
@@ -66,10 +70,10 @@ public class PluginManager {
 	}
 
 	public BotCommand[] getBotCommands() {
-		BotCommand[] bc = new BotCommand[commands.size()];
+		BotCommand[] bc = new BotCommand[botCommands.size()];
 		int i = 0;
-		for (String command : commands.keySet()) {
-			bc[i++] = new BotCommand(command, "");
+		for (BotCommand command : botCommands) {
+			bc[i++] = command;
 		}
 		return bc;
 	}
@@ -118,9 +122,13 @@ public class PluginManager {
 				// Instantiate and load Plugin
 				BotPlugin plugin = c.getConstructor().newInstance();
 
+				// Stores BotCommands to set commands with botfather
+				BotCommand[] botCommandsList = plugin.getCommands();
+				this.botCommands.addAll(Arrays.asList(botCommandsList));
+
 				// Map commands to Plugin
-				for (String command : plugin.getCommands()) {
-					commands.put(command, plugin);
+				for (BotCommand command : botCommandsList) {
+					commands.put(command.command(), plugin);
 				}
 				if (plugin.hasMessageAccess()) {
 					messagePlugins.add(plugin);

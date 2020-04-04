@@ -1,15 +1,17 @@
 package cafe.seafarers.plugins;
 
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.pengrad.telegrambot.model.BotCommand;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.SendMessage;
+
 public class RollPlugin implements BotPlugin {
-	final String[] COMMANDS = { "r" };
+	private static final String[] COMMANDS = { "r" };
+	private static final String[] DESCRIPTIONS = { "[quantity]d[dice_size] rolls some dice" };
 
 	@Override
 	public BaseRequest onCommand(Update update) {
@@ -73,8 +75,12 @@ public class RollPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override
@@ -89,7 +95,7 @@ public class RollPlugin implements BotPlugin {
 
 	@Override
 	public String getAuthor() {
-		return "Matthew Klawitter\nCode based upon Mark Power's Python implementation";
+		return "Matthew Klawitter\nCode based upon Mark Powers' Python implementation";
 	}
 
 	@Override
@@ -99,7 +105,7 @@ public class RollPlugin implements BotPlugin {
 
 	@Override
 	public String getHelp() {
-		return "Roll: '/r [quantity]d[dice_size' to roll a dice.";
+		return "Roll: '/r [quantity]d[dice_size]' to roll a dice.";
 	}
 
 	@Override

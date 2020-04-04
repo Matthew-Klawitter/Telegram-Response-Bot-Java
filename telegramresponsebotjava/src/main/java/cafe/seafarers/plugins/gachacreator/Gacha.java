@@ -1,13 +1,15 @@
 package cafe.seafarers.plugins.gachacreator;
 
-import cafe.seafarers.config.Resources;
-import cafe.seafarers.currencies.BankManager;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+
+import cafe.seafarers.config.Resources;
+import cafe.seafarers.currencies.BankManager;
 
 public class Gacha {
 	private String name, special, weightClass;

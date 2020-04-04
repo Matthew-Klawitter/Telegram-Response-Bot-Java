@@ -12,6 +12,7 @@ import java.util.Random;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -155,6 +156,9 @@ public class TriviaPlugin implements BotPlugin {
 	}
 
 	private static final String[] COMMANDS = { "trivia", "trivialist", "trivianew", "triviastop", "trivianext" };
+	private static final String[] DESCRIPTIONS = { "[name] starts a trivia game", "lists current trivia games",
+			"creates a new trivia game", "stops a trivia game", "skips a trivia question" };
+
 	// Trivia name to TrivaGame
 	private HashMap<String, TriviaGame> trivia;
 
@@ -283,8 +287,12 @@ public class TriviaPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

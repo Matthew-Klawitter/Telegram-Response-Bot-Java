@@ -1,12 +1,20 @@
 package cafe.seafarers.config;
 
-import cafe.seafarers.plugins.BotPlugin;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+
+import cafe.seafarers.plugins.BotPlugin;
 
 public class Resources {
 	/**

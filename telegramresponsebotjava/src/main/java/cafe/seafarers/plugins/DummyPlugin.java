@@ -1,14 +1,20 @@
 package cafe.seafarers.plugins;
 
-import cafe.seafarers.config.Resources;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
-import java.io.*;
+import cafe.seafarers.config.Resources;
 
 public class DummyPlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "test" };
+	private static final String[] DESCRIPTIONS = { "tests your bot is working" };
 
 	@Override
 	public BaseRequest onCommand(Update update) {
@@ -21,8 +27,12 @@ public class DummyPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendPhoto;
@@ -21,6 +22,7 @@ import cafe.seafarers.config.Resources;
 
 public class DogePlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "doge" };
+	private static final String[] DESCRIPTIONS = { "sends a doge photo" };
 	private static final String[] WORDS = { "many", "very", "such", "much", "so", "wow" };
 	private static final Color[] COLORS = { new Color(52, 255, 0), // Green
 			new Color(255, 0, 0), // Red
@@ -100,8 +102,12 @@ public class DogePlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return COMMANDS;
+	public BotCommand[] getCommands() {
+		BotCommand[] botCommands = new BotCommand[COMMANDS.length];
+		for (int i = 0; i < botCommands.length; i++) {
+			botCommands[i] = new BotCommand(COMMANDS[i], DESCRIPTIONS[i]);
+		}
+		return botCommands;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package cafe.seafarers.plugins;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 
@@ -15,8 +16,8 @@ public class SocialCreditPlugin implements BotPlugin {
 	}
 
 	@Override
-	public String[] getCommands() {
-		return new String[0];
+	public BotCommand[] getCommands() {
+		return new BotCommand[0];
 	}
 
 	@Override
