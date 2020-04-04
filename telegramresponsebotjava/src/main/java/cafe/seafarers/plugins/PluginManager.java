@@ -64,22 +64,22 @@ public class PluginManager {
 		}
 		return false;
 	}
-	
-	public BotCommand[] getBotCommands(){
+
+	public BotCommand[] getBotCommands() {
 		BotCommand[] bc = new BotCommand[commands.size()];
 		int i = 0;
-		for(String command : commands.keySet()) {
+		for (String command : commands.keySet()) {
 			bc[i++] = new BotCommand(command, "");
 		}
 		return bc;
 	}
-	
+
 	/**
 	 * Prints the loaded bot commands
 	 */
 	public void printCommands() {
 		System.out.println("Commands:");
-		for(String command : commands.keySet()) {
+		for (String command : commands.keySet()) {
 			System.out.print("\t");
 			System.out.println(command);
 		}
@@ -164,10 +164,9 @@ public class PluginManager {
 		case "help":
 			if (getPluginByName(args) == null) {
 				return new SendMessage(chatId,
-						"/help <plugin name> - Display help for a plugin\n" 
-				+ "/plugins - List plugins\n"
-				+ "/disable <plugin name> - Disables plugin\n"
-				+ "/enable <plugin name> - Enables plugin\n");
+						"/help <plugin name> - Display help for a plugin\n" + "/plugins - List plugins\n"
+								+ "/disable <plugin name> - Disables plugin\n"
+								+ "/enable <plugin name> - Enables plugin\n");
 			} else {
 				BotPlugin plugin = getPluginByName(args);
 				StringBuffer sb = new StringBuffer();
@@ -202,9 +201,9 @@ public class PluginManager {
 			}
 		default:
 			BotPlugin plugin = commands.get(command);
-			if(plugin == null) { // If no plugin with command
+			if (plugin == null) { // If no plugin with command
 				return new SendMessage(chatId, "That command does not exist");
-			} else if(!plugins.get(plugin)) {
+			} else if (!plugins.get(plugin)) {
 				return new SendMessage(chatId, plugin.getName() + " is disabled.");
 			}
 			return plugin.onCommand(update);
@@ -226,7 +225,7 @@ public class PluginManager {
 		}
 		return requests;
 	}
-	
+
 	public List<BaseRequest> updatePeriodically() {
 		List<BaseRequest> updates = new ArrayList<BaseRequest>();
 		for (BotPlugin plugin : plugins.keySet()) {

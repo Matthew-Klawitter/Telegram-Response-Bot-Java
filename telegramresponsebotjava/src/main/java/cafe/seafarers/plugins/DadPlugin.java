@@ -6,51 +6,51 @@ import com.pengrad.telegrambot.request.SendMessage;
 
 public class DadPlugin implements BotPlugin {
 	private static final String[] COMMANDS = {};
-	
+
 	@Override
-    public BaseRequest onCommand(Update update) {
-    	return null;
-    }
-	
+	public BaseRequest onCommand(Update update) {
+		return null;
+	}
+
 	@Override
 	public BaseRequest onMessage(Update update) {
 		String message = update.message().text();
-		if(message.toLowerCase().startsWith("i'm") || message.toLowerCase().startsWith("im")) {
-			String newMessage = "Hi "+message.substring(3).trim()+", I'm dad!";
+		if (message.toLowerCase().startsWith("i'm") || message.toLowerCase().startsWith("im")) {
+			String newMessage = "Hi " + message.substring(3).trim() + ", I'm dad!";
 			return new SendMessage(update.message().chat().id(), newMessage);
 		}
 		return null;
 	}
 
 	@Override
-    public String[] getCommands() {
-        return COMMANDS;
-    }
+	public String[] getCommands() {
+		return COMMANDS;
+	}
 
 	@Override
-    public String getName() {
-        return "Dad";
-    }
+	public String getName() {
+		return "Dad";
+	}
 
 	@Override
-    public String getAuthor() {
-        return "Mark";
-    }
+	public String getAuthor() {
+		return "Mark";
+	}
 
 	@Override
-    public String getVersion() {
-        return "1.0";
-    }
+	public String getVersion() {
+		return "1.0";
+	}
 
 	@Override
-    public boolean enable() {
-        return true;
-    }
+	public boolean enable() {
+		return true;
+	}
 
 	@Override
-    public boolean disable() {
-        return true;
-    }	
+	public boolean disable() {
+		return true;
+	}
 
 	@Override
 	public boolean hasMessageAccess() {
@@ -61,7 +61,7 @@ public class DadPlugin implements BotPlugin {
 	public String getHelp() {
 		return "I'm dad!\n";
 	}
-	
+
 	@Override
 	public BaseRequest periodicUpdate() {
 		return null;

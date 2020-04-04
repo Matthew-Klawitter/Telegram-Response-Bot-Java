@@ -231,7 +231,7 @@ public class TriviaPlugin implements BotPlugin {
 	public BaseRequest onMessage(Update update) {
 		long id = update.message().chat().id();
 		TriviaGame game = currentGames.get(id);
-		if (game != null){
+		if (game != null) {
 			currentGuesses.put(id, currentGuesses.get(id) + 1);
 			if (game.checkAnswer(update.message().text())) {
 				return nextQuestion(game, update.message().chat().id(), update.message().from(), false);

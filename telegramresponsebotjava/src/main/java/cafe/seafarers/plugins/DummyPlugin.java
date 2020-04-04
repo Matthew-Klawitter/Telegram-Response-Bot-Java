@@ -8,47 +8,47 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.io.*;
 
 public class DummyPlugin implements BotPlugin {
-	private static final String[] COMMANDS = {"test"};
-	
+	private static final String[] COMMANDS = { "test" };
+
 	@Override
-    public BaseRequest onCommand(Update update) {
-    	return new SendMessage(update.message().chat().id(), "Hello!");
-    }
-	
-	@Override
-	public BaseRequest onMessage(Update update) {
-		return new SendMessage(update.message().chat().id(), update.message().text()); 
+	public BaseRequest onCommand(Update update) {
+		return new SendMessage(update.message().chat().id(), "Hello!");
 	}
 
 	@Override
-    public String[] getCommands() {
-        return COMMANDS;
-    }
+	public BaseRequest onMessage(Update update) {
+		return new SendMessage(update.message().chat().id(), update.message().text());
+	}
 
 	@Override
-    public String getName() {
-        return "Dummy Plugin";
-    }
+	public String[] getCommands() {
+		return COMMANDS;
+	}
 
 	@Override
-    public String getAuthor() {
-        return "";
-    }
+	public String getName() {
+		return "Dummy Plugin";
+	}
 
 	@Override
-    public String getVersion() {
-        return "1.0";
-    }
+	public String getAuthor() {
+		return "";
+	}
 
 	@Override
-    public boolean enable() {
-        return true;
-    }
+	public String getVersion() {
+		return "1.0";
+	}
 
 	@Override
-    public boolean disable() {
-        return true;
-    }	
+	public boolean enable() {
+		return true;
+	}
+
+	@Override
+	public boolean disable() {
+		return true;
+	}
 
 	@Override
 	public boolean hasMessageAccess() {
@@ -70,12 +70,12 @@ public class DummyPlugin implements BotPlugin {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		String st;
-		while ((st = br.readLine()) != null){
+		while ((st = br.readLine()) != null) {
 			System.out.println(st);
 		}
 
 	}
-	
+
 	@Override
 	public BaseRequest periodicUpdate() {
 		return null;

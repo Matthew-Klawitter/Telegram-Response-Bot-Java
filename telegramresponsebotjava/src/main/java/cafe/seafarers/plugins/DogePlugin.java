@@ -41,7 +41,7 @@ public class DogePlugin implements BotPlugin {
 		switch (command) {
 		case "doge":
 			int count = 5;
-			if(collectedWords.size() < count) {
+			if (collectedWords.size() < count) {
 				return null;
 			}
 			shuffleArray(WORDS);
@@ -140,7 +140,7 @@ public class DogePlugin implements BotPlugin {
 	public String getHelp() {
 		return "/doge\n";
 	}
-	
+
 	@Override
 	public BaseRequest periodicUpdate() {
 		return null;

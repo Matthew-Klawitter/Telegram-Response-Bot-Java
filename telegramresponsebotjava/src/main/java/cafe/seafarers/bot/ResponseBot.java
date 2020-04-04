@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SetMyCommands;
+import com.pengrad.telegrambot.response.BaseResponse;
 
 import cafe.seafarers.plugins.PluginManager;
 
@@ -73,7 +74,7 @@ public class ResponseBot {
 		PeriodicUpdateThread thread = new PeriodicUpdateThread(manager, delay);
 		thread.start();
 	}
-	
+
 	public void setCommands(BotCommand[] botCommands) {
 		bot.execute(new SetMyCommands(botCommands));
 	}
