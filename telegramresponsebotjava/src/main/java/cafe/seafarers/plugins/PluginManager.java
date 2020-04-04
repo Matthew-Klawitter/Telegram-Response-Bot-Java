@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -62,6 +63,15 @@ public class PluginManager {
 			return instantiateImported(pluginClasses);
 		}
 		return false;
+	}
+	
+	public BotCommand[] getBotCommands(){
+		BotCommand[] bc = new BotCommand[commands.size()];
+		int i = 0;
+		for(String command : commands.keySet()) {
+			bc[i++] = new BotCommand(command, "");
+		}
+		return bc;
 	}
 	
 	/**

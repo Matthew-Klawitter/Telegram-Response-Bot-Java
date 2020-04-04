@@ -4,11 +4,10 @@ import java.util.List;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendLocation;
-import com.pengrad.telegrambot.response.BaseResponse;
-import com.sun.source.util.Plugin;
+import com.pengrad.telegrambot.request.SetMyCommands;
 
 import cafe.seafarers.plugins.PluginManager;
 
@@ -32,13 +31,13 @@ public class ResponseBot {
 								continue;
 							}
 							if (update.message().text().startsWith("/")) {
-								BaseRequest request = manager.handleCommand(update);
+								BaseRequest<?, ?> request = manager.handleCommand(update);
 								if (request != null) {
 									bot.execute(request);
 								}
 							} else {
 								List<BaseRequest> requests = manager.handleMessage(update);
-								for (BaseRequest request : requests) {
+								for (BaseRequest<?, ?> request : requests) {
 									bot.execute(request);
 								}
 							}
@@ -74,6 +73,10 @@ public class ResponseBot {
 		PeriodicUpdateThread thread = new PeriodicUpdateThread(manager, delay);
 		thread.start();
 	}
+	
+	public void setCommands(BotCommand[] botCommands) {
+		bot.execute(new SetMyCommands(botCommands));
+	}
 
 	private class PeriodicUpdateThread extends Thread {
 		PluginManager manager;
@@ -89,7 +92,7 @@ public class ResponseBot {
 				while (true) {
 					Thread.sleep(delay * 1000);
 					List<BaseRequest> requests = manager.updatePeriodically();
-					for (BaseRequest request : requests) {
+					for (BaseRequest<?, ?> request : requests) {
 						bot.execute(request);
 					}
 				}
