@@ -7,16 +7,21 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.GetMe;
 import com.pengrad.telegrambot.request.SetMyCommands;
+import com.pengrad.telegrambot.response.GetMeResponse;
 
 import cafe.seafarers.plugins.PluginManager;
 
 public class ResponseBot {
 	private TelegramBot bot;
 	private boolean isRunning;
+	private String username;
 
 	public ResponseBot(String token) {
 		bot = new TelegramBot(token);
+		GetMeResponse response = bot.execute(new GetMe());
+		username = response.user().username();
 		isRunning = false;
 	}
 
@@ -26,11 +31,17 @@ public class ResponseBot {
 				public int process(List<Update> list) {
 					for (Update update : list) {
 						try {
-							if (update.message().text() == null) {
+							String text = update.message().text();
+							if (text == null) {
 								System.out.println(update.message().toString());
 								continue;
 							}
-							if (update.message().text().startsWith("/")) {
+							if (text.startsWith("/")) {
+								// Remove the @username part of /command@username
+								if (text.indexOf("@") + 1 == text.indexOf(username)
+										&& text.indexOf("@") < text.indexOf(" ") && text.indexOf("@") != -1) {
+									text = text.replace("@" + username, "");
+								}
 								BaseRequest<?, ?> request = manager.handleCommand(update);
 								if (request != null) {
 									bot.execute(request);
