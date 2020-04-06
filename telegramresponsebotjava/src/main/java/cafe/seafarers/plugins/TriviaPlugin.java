@@ -132,6 +132,7 @@ public class TriviaPlugin implements BotPlugin {
 		public String getWinnerUser() {
 			String winner = null;
 			StringBuffer sb = new StringBuffer("\nScores:\n");
+			boolean validGame = score.entrySet().size() > 1;
 			// Get one winner
 			for (Entry<String, Integer> e : score.entrySet()) {
 				if (winner == null) {
@@ -141,7 +142,8 @@ public class TriviaPlugin implements BotPlugin {
 				}
 				sb.append(e.getKey() + ":\t" + e.getValue() + "\n");
 				// Pay out points equal to the number of questions this player got correct (jeopardy style)
-				if (e.getValue() > 0){
+				// Only pays out during valid games (more than 1 player)
+				if (e.getValue() > 0 && validGame){
 					BankManager.deposit(e.getKey(), e.getValue());
 				}
 			}
