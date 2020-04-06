@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import cafe.seafarers.currencies.BankManager;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import com.pengrad.telegrambot.model.BotCommand;
@@ -139,6 +140,10 @@ public class TriviaPlugin implements BotPlugin {
 					winner = e.getKey();
 				}
 				sb.append(e.getKey() + ":\t" + e.getValue() + "\n");
+				// Pay out points equal to the number of questions this player got correct (jeopardy style)
+				if (e.getValue() > 0){
+					BankManager.deposit(e.getKey(), e.getValue());
+				}
 			}
 			// Check if others tied
 			for (Entry<String, Integer> e : score.entrySet()) {
@@ -148,7 +153,7 @@ public class TriviaPlugin implements BotPlugin {
 			}
 			// Return final scoreboard
 			if (winner != null) {
-				return winner + " has won!\n" + sb.toString();
+				return winner + " has won! Points have been awarded!\n" + sb.toString();
 			} else {
 				return "Nobody won!\n" + sb.toString();
 			}
