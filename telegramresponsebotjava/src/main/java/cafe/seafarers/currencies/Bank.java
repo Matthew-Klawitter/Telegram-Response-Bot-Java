@@ -144,6 +144,21 @@ public class Bank {
 		}
 	}
 
+	/**
+	 * Returns a HashMap containing key: account.userName paired with their amount value: account.amount
+	 *
+	 * @return HashMap<String, Integer>
+	 */
+	public HashMap<String, Integer> getAccountContents(){
+		HashMap<String, Integer> accountContents = new HashMap<String, Integer>();
+
+		for (Account a: accounts.values()) {
+			accountContents.put(a.getUserName(), a.getAmount());
+		}
+
+		return accountContents;
+	}
+
 	public boolean save() {
 		Gson gson = new Gson();
 		String json = gson.toJson(accounts);

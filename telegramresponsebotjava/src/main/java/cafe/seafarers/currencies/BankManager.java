@@ -1,5 +1,7 @@
 package cafe.seafarers.currencies;
 
+import java.util.*;
+
 public class BankManager {
 	/**
 	 * Creates a new account for a given user name if the user name already has an
@@ -83,5 +85,15 @@ public class BankManager {
 	public static int getFunds(String userName) {
 		Bank bank = new Bank();
 		return bank.getFunds(userName);
+	}
+
+	/**
+	 * Returns a Map of account usernames and the amount of currency in their account mapped to them
+	 *
+	 * @return HashMap<String, Integer> containing all account's username's mapped with the amount in their account
+	 */
+	public static HashMap<String, Integer> getAccountContents() {
+		Bank bank = new Bank();
+		return bank.getAccountContents();
 	}
 }
