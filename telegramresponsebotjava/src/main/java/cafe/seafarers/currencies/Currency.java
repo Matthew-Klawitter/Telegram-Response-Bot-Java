@@ -7,7 +7,7 @@ public class Currency implements Serializable {
 	private int value;
 
 	/**
-	 * Used to make custom currencies within CurrenciesBank
+	 * Used to make custom currencies
 	 * 
 	 * @param name  The name of the currency
 	 * @param value The intrinsic value of a single unit, perhaps could change over
