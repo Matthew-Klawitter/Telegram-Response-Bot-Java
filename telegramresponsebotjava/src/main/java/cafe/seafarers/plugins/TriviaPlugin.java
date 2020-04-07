@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import cafe.seafarers.currencies.BankManager;
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -132,7 +129,7 @@ public class TriviaPlugin implements BotPlugin {
 		public String getWinnerUser() {
 			String winner = null;
 			StringBuffer sb = new StringBuffer("\nScores:\n");
-			boolean validGame = score.entrySet().size() > 1;
+			boolean validGame = score.size() > 1;
 			// Get one winner
 			for (Entry<String, Integer> e : score.entrySet()) {
 				if (winner == null) {
@@ -243,6 +240,10 @@ public class TriviaPlugin implements BotPlugin {
 		long id = update.message().chat().id();
 		TriviaGame game = currentGames.get(id);
 		if (game != null) {
+			if (!game.score.containsKey(getCanonicalName(update.message().from()))){
+				game.score.put(getCanonicalName(update.message().from()), 0);
+			}
+
 			currentGuesses.put(id, currentGuesses.get(id) + 1);
 			if (game.checkAnswer(update.message().text())) {
 				return nextQuestion(game, update.message().chat().id(), update.message().from(), false);
