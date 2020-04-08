@@ -2,6 +2,7 @@ package cafe.seafarers.plugins;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
@@ -12,11 +13,19 @@ public class BankPlugin implements BotPlugin {
 	private final String[] DESCRIPTIONS = { "creates an account", "<to> <amount> sends points",
 			"views available funds" };
 
+	private String getCanonicalName(User user) {
+		if (user.username() == null) {
+			return user.firstName();
+		} else {
+			return user.username();
+		}
+	}
+
 	@Override
 	public BaseRequest onCommand(Update update) {
 		String message = update.message().text().substring(1);
 		String command = message.split("[ @]")[0];
-		String user = update.message().from().username();
+		String user = getCanonicalName(update.message().from());
 
 		switch (command) {
 		case "bcreate":
@@ -30,18 +39,17 @@ public class BankPlugin implements BotPlugin {
 			if (args.length == 2) {
 				try {
 					String toUser = args[0];
-					toUser = toUser.substring(0, 1).toUpperCase() + toUser.substring(1);
+					//toUser = toUser.substring(0, 1).toUpperCase() + toUser.substring(1);
 					int amount = Integer.parseInt(args[1]);
 
 					if (BankManager.transferFunds(user, toUser, amount))
 						return new SendMessage(update.message().chat().id(), "Bank: Successfully transferred funds.");
+					return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Your balance is too low.");
 				} catch (NumberFormatException e) {
-					return new SendMessage(update.message().chat().id(),
-							"Bank: Could not transfer funds. Must input a valid amount.");
+					return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Must input a valid amount.");
 				}
 			}
-			return new SendMessage(update.message().chat().id(),
-					"Bank: Could not transfer funds. Invalid arguments specified!");
+			return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Invalid arguments specified!");
 		case "bview":
 			int funds = BankManager.getFunds(user);
 			return new SendMessage(update.message().chat().id(), "Bank: You have " + funds + " points");
