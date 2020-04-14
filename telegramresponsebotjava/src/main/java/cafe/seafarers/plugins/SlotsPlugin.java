@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class SlotsPlugin implements BotPlugin {
-    private final int COST = 5;
+    private final int COST = 3;
     private final String[] COMMANDS = {"slots"};
     private final String[] DESCRIPTIONS = {String.format("spend $%d to play roulette", COST)};
 
@@ -56,7 +56,7 @@ public class SlotsPlugin implements BotPlugin {
 
     @Override
     public String getName() {
-        return "Bank";
+        return "Slots";
     }
 
     @Override
