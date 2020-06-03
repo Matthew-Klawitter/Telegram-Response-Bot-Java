@@ -76,6 +76,7 @@ public class Bank {
 				createAccount(userName);
 				int currentAmount = accounts.get(userName).getAmount();
 				accounts.get(userName).setAmount(currentAmount + amount);
+				save();
 				return true;
 			}
 		}
@@ -102,6 +103,7 @@ public class Bank {
 				return false;
 			} else {
 				createAccount(userName);
+				save();
 				return false;
 			}
 		}
@@ -140,6 +142,7 @@ public class Bank {
 			return currentAmount;
 		} else {
 			createAccount(userName);
+			save();
 			return 0;
 		}
 	}
