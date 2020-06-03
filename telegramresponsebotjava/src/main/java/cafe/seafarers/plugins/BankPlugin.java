@@ -44,7 +44,7 @@ public class BankPlugin implements BotPlugin {
 
 						if (BankManager.transferFunds(user, toUser, amount))
 							return new SendMessage(update.message().chat().id(), "Bank: Successfully transferred funds.");
-						return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Your balance is too low.");
+						return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Your balance is too low or an account has yet to be created.");
 					} catch (NumberFormatException e) {
 						return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Must input a valid amount.");
 					}

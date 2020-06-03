@@ -58,7 +58,7 @@ public class ActivityPlanningPlugin implements BotPlugin{
                                 BankManager.charge(user, bidAmount);
                                 return new SendMessage(update.message().chat().id(),"APP: Congrats " + user + " you bought " + day + "!");
                             }
-                            return new SendMessage(update.message().chat().id(),"APP: Your bid was either too low, or you already own this day.");
+                            return new SendMessage(update.message().chat().id(),"APP: Your bid was either too low, or you already own this activity.");
                         }
                         return new SendMessage(update.message().chat().id(),"APP: Your bid exceeds your account balance!");
 
