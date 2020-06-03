@@ -28,31 +28,31 @@ public class BankPlugin implements BotPlugin {
 		String user = getCanonicalName(update.message().from());
 
 		switch (command) {
-		case "bcreate":
-			if (BankManager.createAccount(user)) {
-				return new SendMessage(update.message().chat().id(), "Bank: Successfully created an account");
-			}
-			return new SendMessage(update.message().chat().id(), "Bank: You already have an account.");
-		case "btransfer":
-			String[] args = message.substring(command.length() + 1).split(" ");
-
-			if (args.length == 2) {
-				try {
-					String toUser = args[0];
-					//toUser = toUser.substring(0, 1).toUpperCase() + toUser.substring(1);
-					int amount = Integer.parseInt(args[1]);
-
-					if (BankManager.transferFunds(user, toUser, amount))
-						return new SendMessage(update.message().chat().id(), "Bank: Successfully transferred funds.");
-					return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Your balance is too low.");
-				} catch (NumberFormatException e) {
-					return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Must input a valid amount.");
+			case "bcreate":
+				if (BankManager.createAccount(user)) {
+					return new SendMessage(update.message().chat().id(), "Bank: Successfully created an account");
 				}
-			}
-			return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Invalid arguments specified!");
-		case "bview":
-			int funds = BankManager.getFunds(user);
-			return new SendMessage(update.message().chat().id(), "Bank: You have " + funds + " points");
+				return new SendMessage(update.message().chat().id(), "Bank: You already have an account.");
+			case "btransfer":
+				String[] args = message.substring(command.length() + 1).split(" ");
+
+				if (args.length == 2) {
+					try {
+						String toUser = args[0];
+						//toUser = toUser.substring(0, 1).toUpperCase() + toUser.substring(1);
+						int amount = Integer.parseInt(args[1]);
+
+						if (BankManager.transferFunds(user, toUser, amount))
+							return new SendMessage(update.message().chat().id(), "Bank: Successfully transferred funds.");
+						return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Your balance is too low.");
+					} catch (NumberFormatException e) {
+						return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Must input a valid amount.");
+					}
+				}
+				return new SendMessage(update.message().chat().id(),"Bank: Could not transfer funds. Invalid arguments specified!");
+			case "bview":
+				int funds = BankManager.getFunds(user);
+				return new SendMessage(update.message().chat().id(), "Bank: You have " + funds + " points");
 		}
 		return null;
 	}
