@@ -179,7 +179,7 @@ public class PluginManager {
 				BotPlugin plugin = getPluginByName(args);
 				StringBuffer sb = new StringBuffer();
 				sb.append(plugin.getName());
-				sb.append(" ( ");
+				sb.append(" (");
 				sb.append(plugin.getVersion());
 				sb.append(")\n By ");
 				sb.append(plugin.getAuthor());
