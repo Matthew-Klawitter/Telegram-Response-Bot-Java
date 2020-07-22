@@ -2,6 +2,7 @@ package cafe.seafarers.plugins;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
@@ -15,9 +16,17 @@ public class SlotsPlugin implements BotPlugin {
     private final String[] COMMANDS = {"slots"};
     private final String[] DESCRIPTIONS = {String.format("spend $%d to play roulette", COST)};
 
+    private String getCanonicalName(User user) {
+        if (user.username() == null) {
+            return user.firstName();
+        } else {
+            return user.username();
+        }
+    }
+
     @Override
     public BaseRequest onCommand(Update update) {
-        String user = update.message().from().username();
+        String user = getCanonicalName(update.message().from());
 
         if (BankManager.charge(user, COST)){
             SlotGame g = new SlotGame();
