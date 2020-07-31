@@ -31,7 +31,7 @@ public class RSSInformPlugin implements BotPlugin {
     private List<ChannelFeed> feeds;
     private Queue<ChannelFeed> channelFeedQueue;
     private LocalDateTime nextUpdate;
-    private Long initialMinutesPollingDelay = 5L;
+    private Long initialMinutesPollingDelay = 1L;
     private Long hourlyPollingRate = 1L;
 
     private String getCanonicalName(User user) {
