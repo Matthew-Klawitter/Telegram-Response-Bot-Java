@@ -114,7 +114,7 @@ public class RSSInformPlugin implements BotPlugin {
         LocalDateTime currentTime = LocalDateTime.now();
 
         if (currentTime.isAfter(nextUpdate)){
-            nextUpdate = currentTime.plusMinutes(1);
+            nextUpdate = currentTime.plusHours(hourlyPollingRate);
 
             if (!feeds.isEmpty()){
                 for (ChannelFeed cf : feeds){
