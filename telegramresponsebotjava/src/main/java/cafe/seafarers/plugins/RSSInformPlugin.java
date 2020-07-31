@@ -20,16 +20,19 @@ import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class RSSInformPlugin implements BotPlugin {
     private final String[] COMMANDS = {"sub"};
     private final String[] DESCRIPTIONS = { "Subscribes this chat channel to an rss feed: /sub [valid-rss url] [feedTitle:true/false]"};
-    private boolean ranOnce = true;
+    private boolean enabled = false;
 
     private List<ChannelFeed> feeds;
+    private Queue<ChannelFeed> channelFeedQueue;
+    private LocalDateTime nextUpdate;
+    private Long initialMinutesPollingDelay = 5L;
+    private Long hourlyPollingRate = 1L;
 
     private String getCanonicalName(User user) {
         if (user.username() == null) {
@@ -103,23 +106,30 @@ public class RSSInformPlugin implements BotPlugin {
 
     @Override
     public BaseRequest periodicUpdate() {
-        /**
-         * TODO:
-         * 1. Implement a better rate limit ( we only need to check at most by the hour)
-         * 2. Implement caching (No use wasting feed bandwidth if we don't need it)
-         * 3. Currently only the first feed in the list is actually going to provide updates... this is due to the fact
-         * that RSS updates are always true in this implementation. We need a solution around that that involves the
-         * above two requirements or essentially return false if that feed hasn't changed and it was cached.
-         */
-        if (!feeds.isEmpty()){
-            for (ChannelFeed cf : feeds){
-                if (cf.checkForUpdates() && ranOnce){
-                    ranOnce = false;
-                    return new SendMessage(cf.getTelegramChannel(), cf.toString());
+        // If feeds are empty, we do not need to set the update rate just yet
+        if (feeds.isEmpty() || !enabled){
+            return null;
+        }
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        if (currentTime.isAfter(nextUpdate)){
+            nextUpdate = currentTime.plusMinutes(1);
+
+            if (!feeds.isEmpty()){
+                for (ChannelFeed cf : feeds){
+                    if (cf.checkForUpdates()){
+                        channelFeedQueue.add(cf);
+                    }
                 }
             }
         }
 
+        if (!channelFeedQueue.isEmpty()){
+            ChannelFeed temp = channelFeedQueue.poll();
+            temp.flagAsSent();
+            return new SendMessage(temp.getTelegramChannel(), temp.toString());
+        }
         return null;
     }
 
@@ -135,7 +145,7 @@ public class RSSInformPlugin implements BotPlugin {
 
     @Override
     public String getVersion() {
-        return "V0.1 ALPHA";
+        return "V0.2 ALPHA";
     }
 
     @Override
@@ -145,18 +155,24 @@ public class RSSInformPlugin implements BotPlugin {
 
     @Override
     public boolean enable() {
+        enabled = true;
         feeds = new ArrayList<ChannelFeed>();
+        channelFeedQueue = new LinkedList<>();
+        nextUpdate = LocalDateTime.now().plusMinutes(initialMinutesPollingDelay);
         return true;
     }
 
     @Override
     public boolean disable() {
+        enabled = false;
         feeds.clear();
+        channelFeedQueue.clear();
         return true;
     }
 
     /**
-     *
+     * TODO: Change implementation to Hashmaps of key: URL value: Feed obj, this will allow for caching the same feed across multiple subscriptions
+     * TODO: Add support for obtaining past feeds between polling rates. Currently we're only grabbing the latest one (fine for the moment)
      */
     class ChannelFeed {
         private Long telegramChannel;
@@ -190,6 +206,10 @@ public class RSSInformPlugin implements BotPlugin {
             return telegramChannel;
         }
 
+        public void flagAsSent(){
+            feed.setSent(true);
+        }
+
         @Override
         public String toString() {
             return feed.toString();
@@ -209,8 +229,11 @@ public class RSSInformPlugin implements BotPlugin {
         private String latestFeedLink; // Link to the specific article
         private Date latestFeedPubDate; // The date this specific article was published
 
+        private Boolean sent;
+
         public Feed(String feedURL){
             this.feedURL = feedURL;
+            sent = false;
         }
 
         /**
@@ -226,12 +249,23 @@ public class RSSInformPlugin implements BotPlugin {
                     SyndFeedInput input = new SyndFeedInput();
                     SyndFeed feed = input.build(new XmlReader(stream));
 
+                    /* We don't care about older posts, so only save the most recent item in the feed. */
+                    SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
+
+                    // If the published dates are not the same then there has been an update and we need to update the flag
+                    if (latestFeedPubDate != null && !latestFeedPubDate.equals(latest.getPublishedDate())){
+                        sent = false;
+                    }
+
+                    // Current update implementation necessitates this flag. Once the bot sends the item it marks sent as true
+                    if (sent){
+                        return false;
+                    }
+
                     feedTitle = feed.getTitle(); // The Feed Title
                     feedDescription = feed.getDescription(); // The description of the feed
                     feedLink = feed.getLink(); // Link to the feed
 
-                    /* We don't care about older posts, so only save the most recent item in the feed. */
-                    SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
                     latestFeedTitle = Jsoup.parse(latest.getDescription().getValue()).wholeText();
                     latestFeedLink = latest.getLink();
                     latestFeedPubDate =  latest.getPublishedDate();
@@ -264,12 +298,23 @@ public class RSSInformPlugin implements BotPlugin {
                     SyndFeedInput input = new SyndFeedInput();
                     SyndFeed feed = input.build(new XmlReader(stream));
 
+                    /* We don't care about older posts, so only save the most recent item in the feed. */
+                    SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
+
+                    // If the published dates are not the same then there has been an update and we need to update the flag
+                    if (latestFeedPubDate != null && !latestFeedPubDate.equals(latest.getPublishedDate())){
+                        sent = false;
+                    }
+
+                    // Current update implementation necessitates this flag. Once the bot sends the item it marks sent as true
+                    if (sent){
+                        return false;
+                    }
+
                     feedTitle = feed.getTitle(); // The Feed Title
                     feedDescription = feed.getDescription(); // The description of the feed
                     feedLink = feed.getLink(); // Link to the feed
 
-                    /* We don't care about older posts, so only save the most recent item in the feed. */
-                    SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
                     latestFeedTitle = Jsoup.parse(latest.getDescription().getValue()).wholeText();
                     latestFeedTitle = latestFeedTitle.substring(0, latestFeedTitle.indexOf('\n'));
                     latestFeedLink = latest.getLink();
@@ -286,6 +331,10 @@ public class RSSInformPlugin implements BotPlugin {
             }
         }
 
+        public void setSent(Boolean sent) {
+            this.sent = sent;
+        }
+
         @Override
         public String toString() {
             return "New update from " + feedTitle + "!\n" +
@@ -293,7 +342,7 @@ public class RSSInformPlugin implements BotPlugin {
                     "Published: " + latestFeedPubDate.toString() + "\n" +
                     "Read at: " + latestFeedLink + "\n\n" +
                     feedTitle + " describes their content as: " + feedDescription + "\n" +
-                    "Consider subscribing to this feed link: " + feedLink;
+                    "Consider subscribing to this feed link: " + feedURL;
         }
     }
 }
