@@ -29,7 +29,7 @@ public class ForecastPlugin implements BotPlugin {
 		String command = message.split("[ @]")[0].toLowerCase();
 		String args = message.substring(command.length()).trim();
 		switch (command) {
-		case "forecast":
+		case "weather":
 			if (args.isEmpty()) {
 				return new SendMessage(update.message().chat().id(), "Please enter where (City,country)");
 			}
