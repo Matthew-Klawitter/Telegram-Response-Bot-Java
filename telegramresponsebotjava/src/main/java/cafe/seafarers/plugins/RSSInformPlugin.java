@@ -1,6 +1,5 @@
 package cafe.seafarers.plugins;
 
-import cafe.seafarers.currencies.BankManager;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
@@ -25,10 +24,10 @@ import java.util.*;
 
 public class RSSInformPlugin implements BotPlugin {
     private final String[] COMMANDS = {"sub"};
-    private final String[] DESCRIPTIONS = { "Subscribes this chat channel to an rss feed: /sub [valid-rss url] [feedTitle:true/false]"};
+    private final String[] DESCRIPTIONS = { "Subscribes this chat channel to an rss feed: /sub [valid-rss url]"};
     private boolean enabled = false;
 
-    private List<ChannelFeed> feeds;
+    private HashMap<String, Feed> feeds;
     private Queue<ChannelFeed> channelFeedQueue;
     private LocalDateTime nextUpdate;
     private Long initialMinutesPollingDelay = 1L;
@@ -44,6 +43,7 @@ public class RSSInformPlugin implements BotPlugin {
 
     @Override
     public BaseRequest onCommand(Update update) {
+        Long channel = update.message().chat().id();
         String message = update.message().text().substring(1);
         String command = message.split("[ @]")[0];
 
@@ -53,29 +53,27 @@ public class RSSInformPlugin implements BotPlugin {
 
                 if (args.length >= 1) {
                     String url = args[0];
-                    boolean noTitle = false;
 
-                    /* If we get a second arg, check for bool, if true this RSS feed has a valid title (almost no one should have to use this) */
-                    if (args.length >= 2){
-                        noTitle = Boolean.parseBoolean(args[1]);
-                    }
-
-                    // If the RSS does have a title then we initialize with a different method
-                    if (!noTitle){
-                        ChannelFeed f = new ChannelFeed(update.message().chat().id(), url, true);
-                        if (f.checkInitialUpdate()){
-                            feeds.add(f);
-                            return new SendMessage(update.message().chat().id(), "RSSInformer: Successfully subscribed to the feed");
-                        }
-                        return new SendMessage(update.message().chat().id(), "RSSInformer: The specified URL does not link to a valid RSS feed.");
+                    if (feeds.containsKey(url)){
+                        // then we just need to sub a channel to it
+                        if (feeds.get(url).addSub(channel))
+                            return new SendMessage(update.message().chat().id(), "RSSInformer: Successfully subscribed to the feed.");
+                        return new SendMessage(update.message().chat().id(), "RSSInformer: This channel is already subscribed to this feed.");
                     }
                     else {
-                        ChannelFeed f = new ChannelFeed(update.message().chat().id(), url, false);
-                        if (f.checkInitialUpdateNoTitle()){
-                            feeds.add(f);
-                            return new SendMessage(update.message().chat().id(), "RSSInformer: Successfully subscribed to the feed");
+                        Feed f = new Feed(url);
+
+                        if (f.updateFeedData()){
+                            // then feed data is good
+                            feeds.put(url, f);
+
+                            if (f.addSub(channel))
+                                return new SendMessage(update.message().chat().id(), "RSSInformer: Successfully subscribed to the feed.");
+                            return new SendMessage(update.message().chat().id(), "RSSInformer: This channel is already subscribed to this feed.");
                         }
-                        return new SendMessage(update.message().chat().id(), "RSSInformer: The specified URL does not link to a valid RSS feed.");
+                        else {
+                            return new SendMessage(update.message().chat().id(), "RSSInformer: The specified URL does not link to a valid RSS feed.");
+                        }
                     }
                 }
                 return new SendMessage(update.message().chat().id(), "RSSInformer: You must specify an RSS url as the first parameter.");
@@ -114,21 +112,25 @@ public class RSSInformPlugin implements BotPlugin {
         LocalDateTime currentTime = LocalDateTime.now();
 
         if (currentTime.isAfter(nextUpdate)){
-            nextUpdate = currentTime.plusHours(hourlyPollingRate);
+            nextUpdate = currentTime.plusMinutes(hourlyPollingRate);
 
+            // update feeds, every time we have an update, send out the string to all channels subbed to it
             if (!feeds.isEmpty()){
-                for (ChannelFeed cf : feeds){
-                    if (cf.checkForUpdates()){
-                        channelFeedQueue.add(cf);
+                for (Feed f : feeds.values()){
+                    if (f.updateFeedData()){
+                        f.setSent(true);
+
+                        for (Long sub : f.getSubscriptions()){
+                            channelFeedQueue.add(new ChannelFeed(sub, f.toString()));
+                        }
                     }
                 }
             }
         }
 
         if (!channelFeedQueue.isEmpty()){
-            ChannelFeed temp = channelFeedQueue.poll();
-            temp.flagAsSent();
-            return new SendMessage(temp.getTelegramChannel(), temp.toString());
+            ChannelFeed f = channelFeedQueue.poll();
+            return new SendMessage(f.getTelegramChannel(), f.getMessage());
         }
         return null;
     }
@@ -145,18 +147,18 @@ public class RSSInformPlugin implements BotPlugin {
 
     @Override
     public String getVersion() {
-        return "V0.2 ALPHA";
+        return "V0.4 ALPHA";
     }
 
     @Override
     public String getHelp() {
-        return "Periodically displays updates to subscribed RSS feeds. To subscribe to a feed in this channel use the following command \n /sub [valid-feed-url] [rss-has-title:true/false]";
+        return "Periodically displays updates to subscribed RSS feeds. To subscribe to a feed in this channel use the following command \n /sub [valid-feed-url]";
     }
 
     @Override
     public boolean enable() {
         enabled = true;
-        feeds = new ArrayList<ChannelFeed>();
+        feeds = new HashMap<String, Feed>();
         channelFeedQueue = new LinkedList<>();
         nextUpdate = LocalDateTime.now().plusMinutes(initialMinutesPollingDelay);
         return true;
@@ -165,59 +167,33 @@ public class RSSInformPlugin implements BotPlugin {
     @Override
     public boolean disable() {
         enabled = false;
-        feeds.clear();
         channelFeedQueue.clear();
         return true;
     }
 
     /**
-     * TODO: Change implementation to Hashmaps of key: URL value: Feed obj, this will allow for caching the same feed across multiple subscriptions
-     * TODO: Add support for obtaining past feeds between polling rates. Currently we're only grabbing the latest one (fine for the moment)
-     */
+     * Wrapper class for temporarily storing data in the channelFeedQueue
+     **/
     class ChannelFeed {
-        private Long telegramChannel;
-        private Feed feed;
-        private Boolean hasTitle;
+        private Long TelegramChannel;
+        private String message;
 
-        public ChannelFeed(Long telegramChannel, String URL, Boolean hasTitle){
-            this.telegramChannel = telegramChannel;
-            feed = new Feed(URL);
-            this.hasTitle = hasTitle;
-        }
-
-        public boolean checkInitialUpdate(){
-            return feed.updateFeedData();
-        }
-
-        public boolean checkInitialUpdateNoTitle(){
-            return feed.updateFeedDataNoTitle();
-        }
-
-        public boolean checkForUpdates(){
-            if (hasTitle){
-                return feed.updateFeedData();
-            }
-            else {
-                return feed.updateFeedDataNoTitle();
-            }
+        public ChannelFeed (Long tc, String m){
+            this.TelegramChannel = tc;
+            this.message = m;
         }
 
         public Long getTelegramChannel() {
-            return telegramChannel;
+            return TelegramChannel;
         }
 
-        public void flagAsSent(){
-            feed.setSent(true);
-        }
-
-        @Override
-        public String toString() {
-            return feed.toString();
+        public String getMessage() {
+            return message;
         }
     }
 
     /**
-     *
+     * Stores primitive data on a single RSS feed and all telegram channels subscribed to it.
      */
     static class Feed {
         private String feedURL; // Link to the feed for users to subscribe to it themselves
@@ -226,13 +202,16 @@ public class RSSInformPlugin implements BotPlugin {
         private String feedLink; // The URL where people can subscribe to the feed
 
         private String latestFeedTitle; // The title of this article (though this implementation in RSS varies... we may wish to not share this)
+        private String latestFeedDesc;
         private String latestFeedLink; // Link to the specific article
         private Date latestFeedPubDate; // The date this specific article was published
 
+        private List<Long> subscriptions;
         private Boolean sent;
 
         public Feed(String feedURL){
             this.feedURL = feedURL;
+            subscriptions = new ArrayList<Long>();
             sent = false;
         }
 
@@ -252,8 +231,8 @@ public class RSSInformPlugin implements BotPlugin {
                     /* We don't care about older posts, so only save the most recent item in the feed. */
                     SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
 
-                    // If the published dates are not the same then there has been an update and we need to update the flag
-                    if (latestFeedPubDate != null && !latestFeedPubDate.equals(latest.getPublishedDate())){
+                    // If the descriptions are not the same then there has been an update and we need to update the flag
+                    if (latest.getTitleEx() != null && !(latest.getTitleEx().getValue()).equals(latestFeedTitle)){
                         sent = false;
                     }
 
@@ -262,63 +241,55 @@ public class RSSInformPlugin implements BotPlugin {
                         return false;
                     }
 
-                    feedTitle = feed.getTitle(); // The Feed Title
-                    feedDescription = feed.getDescription(); // The description of the feed
-                    feedLink = feed.getLink(); // Link to the feed
-
-                    latestFeedTitle = Jsoup.parse(latest.getDescription().getValue()).wholeText();
-                    latestFeedLink = latest.getLink();
-                    latestFeedPubDate =  latest.getPublishedDate();
-
-                    return true;
-                } catch (IOException | FeedException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        /**
-         * Updates our cached data for this feed.
-         * Checks for updates to feedTitle, feedDescription, feedLink, feedLatestBuild, latestFeedTitle, latestFeedLink,
-         * and latestFeedPubDate and updates the content if our cached results are older.
-         *
-         * A special method for updating the feed specifically for marks.kitchen (https://marks.kitchen/feed.xml)
-         * This feed is specifically built around a data format that does not support tagged titles, which are instead
-         * located in the first line of the description.
-         */
-        public boolean updateFeedDataNoTitle(){
-            String url = feedURL;
-            try (CloseableHttpClient client = HttpClients.createMinimal()) {
-                HttpUriRequest request = new HttpGet(url);
-                try (CloseableHttpResponse response = client.execute(request); InputStream stream = response.getEntity().getContent()) {
-                    SyndFeedInput input = new SyndFeedInput();
-                    SyndFeed feed = input.build(new XmlReader(stream));
-
-                    /* We don't care about older posts, so only save the most recent item in the feed. */
-                    SyndEntry latest = (SyndEntry) feed.getEntries().get(0);
-
-                    // If the published dates are not the same then there has been an update and we need to update the flag
-                    if (latestFeedPubDate != null && !latestFeedPubDate.equals(latest.getPublishedDate())){
-                        sent = false;
+                    if (feed.getTitleEx() != null){
+                        feedTitle = feed.getTitleEx().getValue(); // The Feed Title
+                    }
+                    else{
+                        feedTitle = "No title provided";
                     }
 
-                    // Current update implementation necessitates this flag. Once the bot sends the item it marks sent as true
-                    if (sent){
-                        return false;
+                    if (feed.getDescriptionEx() != null){
+                        feedDescription = feed.getDescriptionEx().getValue(); // The description of the feed
+                    }
+                    else{
+                        feedDescription = "No description provided";
                     }
 
-                    feedTitle = feed.getTitle(); // The Feed Title
-                    feedDescription = feed.getDescription(); // The description of the feed
-                    feedLink = feed.getLink(); // Link to the feed
+                    if (feed.getLink() != null){
+                        feedLink = feed.getLink(); // Link to the feed
+                    }
+                    else{
+                        feedLink = feedURL;
+                    }
 
-                    latestFeedTitle = Jsoup.parse(latest.getDescription().getValue()).wholeText();
-                    latestFeedTitle = latestFeedTitle.substring(0, latestFeedTitle.indexOf('\n'));
-                    latestFeedLink = latest.getLink();
-                    latestFeedPubDate =  latest.getPublishedDate();
+                    if (latest.getTitleEx() != null){
+                        latestFeedTitle = latest.getTitleEx().getValue();
+                    }
+                    else{
+                        latestFeedTitle = "Untitled";
+                    }
+
+                    if (latest.getDescription() != null){
+                        latestFeedDesc = Jsoup.parse(latest.getDescription().getValue()).wholeText();
+                        latestFeedDesc = latestFeedDesc.substring(0, latestFeedDesc.indexOf('\n'));
+                    }
+                    else{
+                        latestFeedTitle = "Not provided";
+                    }
+
+                    if (latest.getLink() != null){
+                        latestFeedLink = latest.getLink();
+                    }
+                    else{
+                        latestFeedLink = feedURL;
+                    }
+
+                    if (latest.getPublishedDate() != null){
+                        latestFeedPubDate = latest.getPublishedDate();
+                    }
+                    else{
+                        latestFeedPubDate = new Date();
+                    }
 
                     return true;
                 } catch (IOException | FeedException e) {
@@ -335,10 +306,35 @@ public class RSSInformPlugin implements BotPlugin {
             this.sent = sent;
         }
 
+        public Boolean addSub(Long channel){
+            if (!subscriptions.contains(channel)){
+                subscriptions.add(channel);
+                return true;
+            }
+            return false;
+        }
+
+        public Boolean rmSub(Long channel){
+            if (subscriptions.contains(channel)){
+                subscriptions.remove(channel);
+                return true;
+            }
+            return false;
+        }
+
+        public void rmAll(){
+            subscriptions.clear();
+        }
+
+        public List<Long> getSubscriptions() {
+            return subscriptions;
+        }
+
         @Override
         public String toString() {
             return "New update from " + feedTitle + "!\n" +
                     "Title: " + latestFeedTitle + "\n" +
+                    "Description: " + latestFeedDesc + "\n" +
                     "Published: " + latestFeedPubDate.toString() + "\n" +
                     "Read at: " + latestFeedLink + "\n\n" +
                     feedTitle + " describes their content as: " + feedDescription + "\n" +
