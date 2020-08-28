@@ -30,7 +30,7 @@ public class RSSInformPlugin implements BotPlugin {
     private HashMap<String, Feed> feeds;
     private Queue<ChannelFeed> channelFeedQueue;
     private LocalDateTime nextUpdate;
-    private Long initialMinutesPollingDelay = 1L;
+    private Long initialMinutesPollingDelay = 5L;
     private Long hourlyPollingRate = 1L;
 
     private String getCanonicalName(User user) {
@@ -112,7 +112,7 @@ public class RSSInformPlugin implements BotPlugin {
         LocalDateTime currentTime = LocalDateTime.now();
 
         if (currentTime.isAfter(nextUpdate)){
-            nextUpdate = currentTime.plusMinutes(hourlyPollingRate);
+            nextUpdate = currentTime.plusHours(hourlyPollingRate);
 
             // update feeds, every time we have an update, send out the string to all channels subbed to it
             if (!feeds.isEmpty()){
