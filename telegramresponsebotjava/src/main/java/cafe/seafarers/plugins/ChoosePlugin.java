@@ -14,7 +14,7 @@ public class ChoosePlugin implements BotPlugin {
     @Override
     public BaseRequest onCommand(Update update) {
         String message = update.message().text().substring(1);
-        String[] command = message.split("[ @]");
+        String[] command = message.split(" ");
 
         if (command.length > 1){
             Random r = new Random();
