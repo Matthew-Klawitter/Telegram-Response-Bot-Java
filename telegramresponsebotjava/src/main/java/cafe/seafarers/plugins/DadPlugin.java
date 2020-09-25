@@ -16,7 +16,12 @@ public class DadPlugin implements BotPlugin {
 	@Override
 	public BaseRequest onMessage(Update update) {
 		String message = update.message().text();
+
 		if (message.toLowerCase().startsWith("i'm ") || message.toLowerCase().startsWith("im ")) {
+			if (message.contains("tler")){
+				return new SendMessage(update.message().chat().id(), "What are you trying to say son?");
+			}
+
 			String newMessage = "Hi " + message.substring(3).trim() + ", I'm dad!";
 			return new SendMessage(update.message().chat().id(), newMessage);
 		}
