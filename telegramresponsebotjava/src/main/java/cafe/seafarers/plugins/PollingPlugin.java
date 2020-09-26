@@ -105,10 +105,9 @@ public class PollingPlugin implements BotPlugin {
 
     @Override
     public String getHelp() {
-        return  "Ranked Vote:" +
-                "Allows for adding up to 10 suggestions to a list and auto creating a poll based off them." +
+        return  "Allows for adding up to 10 suggestions to a list and auto creating a poll based off them.\n" +
                 "'/suggest [string]' prepares an option for a poll\n" +
-                "'/startvote' Attempts to create a poll based on up to 10 provided suggestions" +
+                "'/startvote' Attempts to create a poll based on up to 10 provided suggestions\n" +
                 "'/suggestclear' resets all suggestions";
     }
 
