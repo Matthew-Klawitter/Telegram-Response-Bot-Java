@@ -36,7 +36,7 @@ public class MumblePlugin implements BotPlugin {
 			return new SendMessage(update.message().chat().id(), "Enabled mumble status.");
 		case "mdisable":
 			enabledChannels.remove(update.message().chat().id());
-			return new SendMessage(update.message().chat().id(), "Enabled mumble status.");
+			return new SendMessage(update.message().chat().id(), "Disabled mumble status.");
 		}
 		return null;
 	}
