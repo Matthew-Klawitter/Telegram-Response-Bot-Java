@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class WikiPlugin implements BotPlugin {
     private final String[] COMMANDS = {"wiki", "wikirand"};
-    private final String[] DESCRIPTIONS = {"/wiki <search quarry>", "/wikirand"};
+    private final String[] DESCRIPTIONS = {"'/wiki <search quarry>' to search for a wiki page.", "'/wikirand' to receive a random wiki page."};
 
     @Override
     public BaseRequest onCommand(Update update) {
@@ -28,8 +28,13 @@ public class WikiPlugin implements BotPlugin {
             sb.append(message.substring(message.indexOf("_") + 1));
             return new SendMessage(update.message().chat().id(), sb.toString());
         }
-        else if (message.equals("wikirand")) {
-            // wiki url for random page, need redirect https://en.wikipedia.org/wiki/Special:Random
+
+        // Remove '@' concatenation should Telegram add it
+        if (message.contains("@")){
+            message.substring(0, message.indexOf('@'));
+        }
+
+        if (message.equals("wikirand") || message.equals("wikirand@CafeBaristaBot")) {
             try {
                 URLConnection con = new URL("https://en.wikipedia.org/wiki/Special:Random").openConnection();
                 con.connect();
