@@ -6,11 +6,16 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Random;
 
 public class WikiPlugin implements BotPlugin {
-    private final String[] COMMANDS = {"wiki"};
-    private final String[] DESCRIPTIONS = {"/wiki <search quarry>"};
+    private final String[] COMMANDS = {"wiki", "wikirand"};
+    private final String[] DESCRIPTIONS = {"/wiki <search quarry>", "/wikirand"};
 
     @Override
     public BaseRequest onCommand(Update update) {
@@ -22,6 +27,22 @@ public class WikiPlugin implements BotPlugin {
             StringBuilder sb = new StringBuilder("https://en.wikipedia.org/wiki/");
             sb.append(message.substring(message.indexOf("_") + 1));
             return new SendMessage(update.message().chat().id(), sb.toString());
+        }
+        else if (message.equals("wikirand")) {
+            // wiki url for random page, need redirect https://en.wikipedia.org/wiki/Special:Random
+            try {
+                URLConnection con = new URL("https://en.wikipedia.org/wiki/Special:Random").openConnection();
+                con.connect();
+                InputStream is = con.getInputStream();
+                is.close();
+                return new SendMessage(update.message().chat().id(), con.getURL().toString());
+            } catch (MalformedURLException e){
+                e.printStackTrace();
+                return new SendMessage(update.message().chat().id(), "Wiki: An unknown error occurred when parsing the url.");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new SendMessage(update.message().chat().id(), "Wiki: An unknown error occurred when opening the url connection.");
+            }
         }
 
         return new SendMessage(update.message().chat().id(), "Wiki: Please enter something to search for after typing '/wiki'");
@@ -63,12 +84,14 @@ public class WikiPlugin implements BotPlugin {
 
     @Override
     public String getVersion() {
-        return "V1.0";
+        return "V1.1";
     }
 
     @Override
     public String getHelp() {
-        return "Used to search for helpful information on a variety of topics\n\n Use '/wiki <quarry>' to find a wiki page.";
+        return "Used to search for helpful information on a variety of topics\n\n" +
+                "Use '/wiki <quarry>' to find a wiki page.\n" +
+                "Use '/wikirand' to discover a random wiki page.";
     }
 
     @Override
