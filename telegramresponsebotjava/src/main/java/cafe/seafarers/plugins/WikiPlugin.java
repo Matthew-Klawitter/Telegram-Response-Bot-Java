@@ -1,6 +1,5 @@
 package cafe.seafarers.plugins;
 
-import cafe.seafarers.currencies.BankManager;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -11,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Random;
 
 public class WikiPlugin implements BotPlugin {
     private final String[] COMMANDS = {"wiki", "wikirand"};
