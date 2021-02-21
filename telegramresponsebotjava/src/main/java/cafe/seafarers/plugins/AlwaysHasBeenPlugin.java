@@ -41,8 +41,7 @@ public class AlwaysHasBeenPlugin implements BotPlugin {
             File file = Resources.LoadFile(this, "always.jpg");
             try {
                 String message = update.message().text();
-                if (message.toLowerCase().startsWith("wait, it's ") || message.toLowerCase().startsWith("wait it's") ||
-                        message.toLowerCase().startsWith("wait, its ") || message.toLowerCase().startsWith("wait its ")) {
+                if (message.toLowerCase().startsWith("wait, it")){
 
                     BufferedImage bufferedImage = ImageIO.read(file);
                     Graphics graphics = bufferedImage.getGraphics();
