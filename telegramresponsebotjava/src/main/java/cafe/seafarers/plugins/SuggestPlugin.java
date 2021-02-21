@@ -20,7 +20,7 @@ public class SuggestPlugin implements BotPlugin {
 
         switch(command){
             case "sug":
-                String arg = message.split(" ")[1];
+                String arg = message.substring(message.indexOf(' ') + 1);
                 suggestions.add(arg);
                 return new SendMessage(update.message().chat().id(),String.format("Suggest: Successfully suggested %s.", arg));
             case "sugview":
