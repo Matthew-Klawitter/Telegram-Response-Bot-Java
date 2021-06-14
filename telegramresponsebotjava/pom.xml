@@ -21,6 +21,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
+							<mainClass>cafe.seafarers.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
