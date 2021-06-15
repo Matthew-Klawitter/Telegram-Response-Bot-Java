@@ -121,7 +121,7 @@ public class SlotsPlugin implements BotPlugin {
 
         private HashMap<String, Integer> configurePatternValues(){
             HashMap<String, Integer> p = new HashMap<>();
-            p.put("777", 80);
+            p.put("777", 115);
             p.put("$$$", 35);
             p.put("@@@", 15);
             p.put("***", 10);
