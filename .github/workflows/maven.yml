@@ -23,5 +23,5 @@ jobs:
     - name: Upload Build
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: telegram-response-bot-java.jar
-        path: ./telegramresponsebotjava/target/telegram-response-bot-java-Build.jar
+        name: telegram-response-bot-java-build.jar
+        path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
