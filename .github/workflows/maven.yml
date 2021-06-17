@@ -1,3 +1,4 @@
+# CI/CD pipeline handling successful builds and releases
 name: CI/CD
 
 on:
