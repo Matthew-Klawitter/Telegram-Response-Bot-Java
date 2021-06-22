@@ -5,9 +5,13 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - master
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -36,8 +40,6 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: release_workflow.yml
-          workflow_conclusion: success
           name: telegram-response-bot-java-build.jar
           path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
       - name: Create Release
