@@ -71,5 +71,11 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.13.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.zeroc/ice -->
+		<dependency>
+			<groupId>com.zeroc</groupId>
+			<artifactId>ice</artifactId>
+			<version>3.7.6</version>
+		</dependency>
 	</dependencies>
 </project>

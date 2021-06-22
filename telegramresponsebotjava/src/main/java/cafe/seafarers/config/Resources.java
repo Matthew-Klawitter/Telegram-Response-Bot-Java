@@ -14,11 +14,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import cafe.seafarers.Main;
 import cafe.seafarers.plugins.BotPlugin;
 
 public class Resources {
 	/**
-	 * Saves a file with specified content to user.dir/pluginName/fileName
+	 * Saves a file with specified content to pluginDir/pluginName/fileName
 	 * 
 	 * @param plugin   the BotPlugin from which a file is being saved
 	 * @param fileName the name of the file to be wrote
@@ -27,7 +28,7 @@ public class Resources {
 	 */
 	public static boolean SaveFile(BotPlugin plugin, String fileName, String content) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + plugin.getName());
 
 			if (!Files.exists(path)) {
@@ -45,7 +46,7 @@ public class Resources {
 	}
 
 	/**
-	 * Saves a file with specified content to user.dir/directory/fileName
+	 * Saves a file with specified content to pluginDir/directory/fileName
 	 * 
 	 * @param directory the directory to save to
 	 * @param fileName  the name of the file to be wrote
@@ -54,7 +55,7 @@ public class Resources {
 	 */
 	public static boolean SaveFile(String directory, String fileName, String content) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + directory);
 
 			if (!Files.exists(path)) {
@@ -72,7 +73,7 @@ public class Resources {
 	}
 
 	/**
-	 * Loads a file from user.dir/pluginName/fileName
+	 * Loads a file from pluginDir/pluginName/fileName
 	 * 
 	 * @param plugin   the plugin attempting to load a file
 	 * @param fileName the name of the file to be loaded
@@ -80,7 +81,7 @@ public class Resources {
 	 */
 	public static File LoadFile(BotPlugin plugin, String fileName) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + plugin.getName());
 
 			if (!Files.exists(path)) {
@@ -95,7 +96,7 @@ public class Resources {
 	}
 
 	/**
-	 * Loads a file from user.dir/directory/fileName
+	 * Loads a file from pluginDir/directory/fileName
 	 * 
 	 * @param directory the directory to load from
 	 * @param fileName  the name of the file to be loaded
@@ -103,7 +104,7 @@ public class Resources {
 	 */
 	public static File LoadFile(String directory, String fileName) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + directory);
 
 			if (!Files.exists(path)) {
@@ -118,7 +119,7 @@ public class Resources {
 	}
 
 	/**
-	 * Serializes an object to a file located in user.dir/plugin_name/filename In
+	 * Serializes an object to a file located in pluginDir/plugin_name/filename In
 	 * order to use this method the BotPlugin object passed as a parameter must be
 	 * implementing Serializable
 	 * 
@@ -133,7 +134,7 @@ public class Resources {
 				return false;
 			}
 
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + plugin.getName());
 
 			if (!Files.exists(path)) {
@@ -152,7 +153,7 @@ public class Resources {
 	}
 
 	/**
-	 * Serializes an object to a file located in user.dir/plugin_name/filename In
+	 * Serializes an object to a file located in pluginDir/plugin_name/filename In
 	 * order to use this method the BotPlugin object passed as a parameter must be
 	 * implementing Serializable
 	 * 
@@ -167,7 +168,7 @@ public class Resources {
 				return false;
 			}
 
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + directory);
 
 			if (!Files.exists(path)) {
@@ -196,7 +197,7 @@ public class Resources {
 	 */
 	public static ObjectInputStream LoadSerializedFile(BotPlugin plugin, String fileName) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + plugin.getName());
 
 			if (!Files.exists(path)) {
@@ -222,7 +223,7 @@ public class Resources {
 	 */
 	public static ObjectInputStream LoadSerializedFile(String directory, String fileName) {
 		try {
-			String dir = System.getProperty("user.dir");
+			String dir = Main.PluginConfigurationDirectory;
 			Path path = Paths.get(dir + "/config/" + directory);
 
 			if (!Files.exists(path)) {
