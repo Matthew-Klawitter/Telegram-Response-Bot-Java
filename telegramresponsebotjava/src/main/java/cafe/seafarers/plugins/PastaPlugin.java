@@ -1,9 +1,17 @@
 package cafe.seafarers.plugins;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import cafe.seafarers.config.Resources;
+import cafe.seafarers.currencies.Account;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -12,7 +20,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 public class PastaPlugin implements BotPlugin {
 	private static final String[] COMMANDS = { "pasta", "pastalist", "pastanew" };
 	private static final String[] DESCRIPTIONS = { "[name] gets an (optionally named) pasta", "lists current pasta",
-			"creates a new pasta" };
+			"Create a new pasta - '/pastanew <name> [type the pasta on a new line]'" };
 	private HashMap<String, String> pasta;
 	private Random random;
 
@@ -35,6 +43,7 @@ public class PastaPlugin implements BotPlugin {
 		case "pastanew":
 			String[] lines = args.split("\n", 2);
 			pasta.put(lines[0], lines[1]);
+			save();
 			return new SendMessage(update.message().chat().id(), "Created pasta: " + lines[0]);
 		case "pasta":
 			if (args.length() > 0) {
@@ -43,7 +52,12 @@ public class PastaPlugin implements BotPlugin {
 				} else {
 					return new SendMessage(update.message().chat().id(), "That pasta doesn't exist");
 				}
-			} else {
+
+			}
+			else if (pasta.isEmpty()){
+				return new SendMessage(update.message().chat().id(), "No pasta's have been created!");
+			}
+			else {
 				int randomIndex = random.nextInt(pasta.size());
 				ArrayList<String> pastas = new ArrayList<String>(pasta.keySet());
 				String key = pastas.get(randomIndex);
@@ -79,12 +93,28 @@ public class PastaPlugin implements BotPlugin {
 
 	@Override
 	public String getVersion() {
-		return "1.0";
+		return "1.1";
 	}
 
 	@Override
 	public boolean enable() {
-		pasta = new HashMap<String, String>();
+		try {
+			File f = Resources.LoadFile(this, "pastas.json");
+
+			if (f != null) {
+				TypeToken<HashMap<String, String>> token = new TypeToken<HashMap<String, String>>() {
+				};
+				Gson gson = new Gson();
+				BufferedReader br = new BufferedReader(new FileReader(f));
+				pasta = gson.fromJson(br, token.getType());
+			} else {
+				pasta = new HashMap<String, String>();
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			pasta = new HashMap<String, String>();
+		}
+
 		random = new Random();
 		return true;
 	}
@@ -107,5 +137,13 @@ public class PastaPlugin implements BotPlugin {
 	@Override
 	public BaseRequest periodicUpdate() {
 		return null;
+	}
+
+	private boolean save() {
+		Gson gson = new Gson();
+		String json = gson.toJson(pasta);
+		if (Resources.SaveFile(this, "pastas.json", json))
+			return true;
+		return false;
 	}
 }
