@@ -30,33 +30,33 @@ jobs:
         name: telegram-response-bot-java-build.jar
         path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
         
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: telegram-response-bot-java-build.jar
-          path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload release artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
-          asset_name: telegramresponsebotjava-build.jar
-          asset_content_type: application/java-archive
+#  release:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Download artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: telegram-response-bot-java-build.jar
+#          path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
+#      - name: Create Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ github.ref }}
+#          draft: false
+#          prerelease: false
+#      - name: Upload release artifact
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./telegramresponsebotjava/target/telegram-response-bot-java-build.jar
+#          asset_name: telegramresponsebotjava-build.jar
+#          asset_content_type: application/java-archive
