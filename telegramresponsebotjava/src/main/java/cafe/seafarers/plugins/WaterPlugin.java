@@ -19,13 +19,12 @@ public class WaterPlugin implements BotPlugin {
     @Override
     public BaseRequest onCommand(Update update) {
         // (weight * (2/3)oz) + (minutes of activity * 12oz) = water per day in oz
-        // convert to cups by multiplaying by .125
+        // convert to cups by multiplying by .125
         String message = update.message().text().substring(1);
         String command = message.split("[ @]")[0];
 
         switch (command) {
             case "water":
-                // assuming 8-12 or 16 hours
                 LocalDateTime currentTime = LocalDateTime.now();
                 int hour = currentTime.getHour();
 
@@ -50,7 +49,7 @@ public class WaterPlugin implements BotPlugin {
                     sb.append(System.lineSeparator());
                     sb.append(oz.toString()).append(" Ounces or").append(System.lineSeparator());
                     sb.append(cups.toString()).append(" Cups of water").append(System.lineSeparator()).append(System.lineSeparator());
-                    sb.append("The current set daily goal is ").append(EST_OZ_PER_DAY).append(" Ounces, or ").append(EST_OZ_PER_DAY/16).append(" Cups of water.");
+                    sb.append("The current set daily goal is ").append(EST_OZ_PER_DAY).append(" Ounces, or ").append(EST_OZ_PER_DAY * .125).append(" Cups of water.");
 
                     return new SendMessage(update.message().chat().id(), sb.toString());
                 }
