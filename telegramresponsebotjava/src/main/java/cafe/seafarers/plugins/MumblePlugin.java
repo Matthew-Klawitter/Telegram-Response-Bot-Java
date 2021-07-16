@@ -130,6 +130,7 @@ public class MumblePlugin implements BotPlugin {
             System.out.println(lastLineProcessed);
             logFile.close();
         } catch(java.io.FileNotFoundException e){
+			System.out.println(e);
             return null;
         }
         return null;
