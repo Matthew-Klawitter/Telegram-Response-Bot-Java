@@ -127,7 +127,7 @@ public class MumblePlugin implements BotPlugin {
                     return null; // if no channels
                 }
             }
-            System.out.println(lastLineProcessed);
+            // System.out.println(lastLineProcessed);
             logFile.close();
         } catch(java.io.FileNotFoundException e){
 			System.out.println(e);
